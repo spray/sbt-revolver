@@ -68,6 +68,9 @@ Use `HotReload.jRebelJar := "/home/user/opt/JRebel/jrebel.jar"` to provide
 the location of your JRebel installation. When starting the server the JRebel java agent will
 then be included.
 
+Another way to configure the location of the JRebel jar is to set the environment variable
+`JREBEL_PATH`.
+
 ## License
 
 Published under the [Apache License 2.0](http://en.wikipedia.org/wiki/Apache_license).

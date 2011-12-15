@@ -58,7 +58,7 @@ object HRPlugin extends Plugin {
             onUnload(state)
         },
 
-        jRebelJar in Global := "",
+        jRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
         startJavaOptions <<= (javaOptions, streams, jRebelJar) map { (options, streams, jRebelJar) =>
           options ++ createJRebelAgentOption(streams.log, jRebelJar).toSeq
