@@ -11,7 +11,7 @@ object HotReload {
 
   object Keys {
     val start = InputKey[ServiceRun]("start",
-      "Fork and run the current project in the background")
+      "Fork and run the current project in the background. If it was started before it is first stopped")
     val startArgs = SettingKey[Seq[String]]("start-args",
       "The arguments which should be given to the main method, when a service is started in the background with `start`")
 
@@ -23,9 +23,6 @@ object HotReload {
 
     val stop = TaskKey[Unit]("stop",
       "Stops the task run in the background")
-
-    val restart = InputKey[ServiceRun]("restart",
-      "Stops and restarts the current background service")
 
     val forkOptions = TaskKey[ForkScalaRun]("fork-options",
       "Collected options needed for the start task for forking")
@@ -40,7 +37,7 @@ object HotReload {
       startArgs in Global := Seq.empty,
       start <<= inputTask { args =>
         (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs, args)
-          .map(startService)
+          .map(restartService)
           .updateState(registerRun)
           .dependsOn(products in Compile)
       },
@@ -48,16 +45,6 @@ object HotReload {
         (streams, state)
           .map(stopServiceWithStreams)
           .updateState(deregisterRun),
-
-      // we need an extra task definition here and cannot simply dependOn stop and start
-      // because a) dependencies may be executed in parallel and b) `updateState` transformations
-      // are possibly run in the wrong order
-      restart <<= inputTask { args =>
-        (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs, args)
-          .map(restartService)
-          .updateState(registerRun)
-          .dependsOn(products in Compile)
-      },
 
       // stop the service if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload =>
