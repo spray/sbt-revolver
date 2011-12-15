@@ -6,7 +6,7 @@ import sbt._
 import sbt.Keys._
 import Project.Initialize
 
-object BackgroundService {
+object HotReload {
   import Keys._
 
   object Keys {
@@ -34,7 +34,7 @@ object BackgroundService {
       "The path to the JRebel jar")
   }
 
-  lazy val backgroundServiceSettings =
+  lazy val hotReloadSettings =
     Seq(
       forkOptions <<= forkOptionsInit,
       startArgs in Global := Seq.empty,
