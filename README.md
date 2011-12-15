@@ -48,11 +48,11 @@ class files will then be automatically picked up by JRebel.
 
 ## Tasks
 
-### start
+### `hr:start`
 Compiles the project and runs it in the background by forking a new JVM. If the project was started
 before, it is automatically stopped before.
 
-### stop
+### `hr:stop`
 Stops the project. The default behaviour is to forcibly kill the background process.
 
 ## Configuration
