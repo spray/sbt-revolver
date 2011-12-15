@@ -10,7 +10,7 @@ object BackgroundService {
   import Keys._
 
   object Keys {
-    val start = TaskKey[ServiceRun]("start",
+    val start = InputKey[ServiceRun]("start",
       "Fork and run the current project in the background")
     val startArgs = SettingKey[Seq[String]]("start-args",
       "The arguments which should be given to the main method, when a service is started in the background with `start`")
@@ -18,7 +18,7 @@ object BackgroundService {
     val stop = TaskKey[Unit]("stop",
       "Stops the task run in the background")
 
-    val restart = TaskKey[ServiceRun]("restart",
+    val restart = InputKey[ServiceRun]("restart",
       "Stops and restarts the current background service")
 
     val forkOptions = TaskKey[ForkScalaRun]("fork-options",
@@ -29,11 +29,12 @@ object BackgroundService {
     Seq(
       forkOptions <<= forkOptionsInit,
       startArgs := Seq.empty,
-      start <<=
-        (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs)
+      start <<= inputTask { args =>
+        (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs, args)
           .map(startService)
           .updateState(registerRun)
-          .dependsOn(products in Compile),
+          .dependsOn(products in Compile)
+      },
       stop <<=
         (streams, state)
           .map(stopServiceWithStreams)
@@ -42,11 +43,12 @@ object BackgroundService {
       // we need an extra task definition here and cannot simply dependOn stop and start
       // because a) dependencies may be executed in parallel and b) `updateState` transformations
       // are possibly run in the wrong order
-      restart <<=
-        (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs)
+      restart <<= inputTask { args =>
+        (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs, args)
           .map(restartService)
           .updateState(registerRun)
-          .dependsOn(products in Compile),
+          .dependsOn(products in Compile)
+      },
 
       // stop the service if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload =>
@@ -58,14 +60,14 @@ object BackgroundService {
       }
     )
 
-  def startService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String], cp: Classpath, args: Seq[String]): ServiceRun = {
+  def startService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String], cp: Classpath, args: Seq[String], extraArgs: Seq[String]): ServiceRun = {
     if (state.has(serviceRunKey))
       throw new RuntimeException("Already started, please `stop` first or use `restart`")
 
     val runner = new BgForkRun(option)
     streams.log.info("Starting service...")
     val process =
-      runner.run(mainClass.get, cp.map(_.data), args, SysoutLogger)
+      runner.run(mainClass.get, cp.map(_.data), args ++ extraArgs, SysoutLogger)
 
     ServiceRun(process)
   }
@@ -83,9 +85,9 @@ object BackgroundService {
     }
   }
 
-  def restartService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String], cp: Classpath, args: Seq[String]): ServiceRun = {
+  def restartService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String], cp: Classpath, args: Seq[String], extraArgs: Seq[String]): ServiceRun = {
     stopServiceWithStreams(streams, state)
-    startService(streams, deregisterRun(state, ()), option, mainClass, cp, args)
+    startService(streams, deregisterRun(state, ()), option, mainClass, cp, args, extraArgs)
   }
 
   /**
