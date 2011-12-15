@@ -67,22 +67,20 @@ object HRPlugin extends Plugin {
   }
 
   object Impl {
-    def startService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String], cp: Classpath, args: Seq[String], extraArgs: Seq[String]): ServiceRun = {
-      if (state.has(serviceRunKey))
-        throw new RuntimeException("Already started, please `stop` first or use `restart`")
-
+    def startService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String],
+                     cp: Classpath, args: Seq[String], extraArgs: Seq[String]): ServiceRun = {
+      assert(!state.has(serviceRunKey))
       val runner = new BgForkRun(option)
       streams.log.info("Starting service...")
-      val process =
-        runner.run(mainClass.get, cp.map(_.data), args ++ extraArgs, SysoutLogger)
-
+      val process = runner.run(mainClass.get, cp.map(_.data), args ++ extraArgs, SysoutLogger)
       ServiceRun(process)
     }
 
-    def stopServiceWithStreams(streams: TaskStreams, state: State): Unit =
+    def stopServiceWithStreams(streams: TaskStreams, state: State) {
       stopService(streams.log, state)
+    }
 
-    def stopService(log: Logger, state: State): Unit = {
+    def stopService(log: Logger, state: State) {
       state.get(serviceRunKey) match {
         case Some(run) =>
           log.info("Aborting service.")
@@ -92,7 +90,8 @@ object HRPlugin extends Plugin {
       }
     }
 
-    def restartService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String], cp: Classpath, args: Seq[String], extraArgs: Seq[String]): ServiceRun = {
+    def restartService(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String],
+                       cp: Classpath, args: Seq[String], extraArgs: Seq[String]): ServiceRun = {
       stopServiceWithStreams(streams, state)
       startService(streams, deregisterRun(state, ()), option, mainClass, cp, args, extraArgs)
     }
@@ -134,12 +133,20 @@ object HRPlugin extends Plugin {
     /**
      * We got that directly from the sbt sources
      */
-    def forkOptionsInit: Initialize[Task[ForkScalaRun]] =
-      (taskTemporaryDirectory, scalaInstance, baseDirectory, startJavaOptions, outputStrategy, fork, javaHome, trapExit, connectInput) map {
-          (tmp, si, base, options, strategy, forkRun, javaHomeDir, trap, connectIn) =>
-        ForkOptions(scalaJars = si.jars, javaHome = javaHomeDir, connectInput = connectIn, outputStrategy = strategy,
-            runJVMOptions = options, workingDirectory = Some(base))
+    def forkOptionsInit: Initialize[Task[ForkScalaRun]] = {
+      (taskTemporaryDirectory, scalaInstance, baseDirectory, startJavaOptions, outputStrategy, javaHome) map {
+        (tmp, si, base, options, strategy, javaHomeDir) => {
+          ForkOptions(
+            scalaJars = si.jars,
+            javaHome = javaHomeDir,
+            connectInput = false,
+            outputStrategy = strategy,
+            runJVMOptions = options,
+            workingDirectory = Some(base)
+          )
+        }
       }
+    }
 
     def createJRebelAgentOption(log: Logger, path: String): Option[String] =
       if (path.trim.isEmpty)
