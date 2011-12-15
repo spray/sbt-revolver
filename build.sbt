@@ -19,3 +19,19 @@ licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray
 (description in LsKeys.lsync) :=
   "An sbt plugin which allows to run the project in the background while doing continuous recompilation."
 
+
+// publishing
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+
+publishMavenStyle := true
+
+publishTo <<= version { version =>
+  Some {
+    "snapshots" at {
+      "http://nexus.scala-tools.org/content/repositories/" + {
+        if (version.trim.endsWith("SNAPSHOT")) "snapshots/" else"releases/"
+      }
+    }
+  }
+}
