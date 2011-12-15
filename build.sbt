@@ -1,25 +1,21 @@
-seq(lsSettings :_*)
-
-sbtPlugin := true
-
-version := "0.5.0"
-
 name := "sbt-hot-reload"
 
 organization := "cc.spray"
 
-description :=
-  "An sbt plugin which allows to run the project in the background while doing continuous recompilation."
+version := "0.5.0"
+
+description := "An sbt plugin which allows to run the project in the background while doing continuous recompilation."
 
 homepage := Some(url("http://github.com/spray/sbt-hot-reload"))
 
 licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-hot-reload/raw/master/LICENSE")
 
-(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "jrebel")
+sbtPlugin := true
 
-(LsKeys.docsUrl in LsKeys.lsync) <<= homepage
 
+///////////////
 // publishing
+///////////////
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
@@ -34,3 +30,14 @@ publishTo <<= version { version =>
     }
   }
 }
+
+
+///////////////
+// ls-sbt
+///////////////
+
+seq(lsSettings :_*)
+
+(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "jrebel")
+
+(LsKeys.docsUrl in LsKeys.lsync) <<= homepage
