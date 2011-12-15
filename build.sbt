@@ -4,15 +4,15 @@ sbtPlugin := true
 
 version := "0.5.0"
 
-name := "sbt-hot-deploy"
+name := "sbt-hot-reload"
 
 organization := "cc.spray"
 
-homepage := Some(url("http://github.com/spray/sbt-hot-deploy"))
+homepage := Some(url("http://github.com/spray/sbt-hot-reload"))
 
-licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-hot-deploy/raw/master/LICENSE")
+licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-hot-reload/raw/master/LICENSE")
 
-(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "hotdeploy", "jrebel")
+(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "jrebel")
 
 (LsKeys.docsUrl in LsKeys.lsync) <<= homepage
 
