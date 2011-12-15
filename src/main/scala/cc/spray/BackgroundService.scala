@@ -15,6 +15,12 @@ object BackgroundService {
     val startArgs = SettingKey[Seq[String]]("start-args",
       "The arguments which should be given to the main method, when a service is started in the background with `start`")
 
+    // we very much would like to use `javaOptions in start` here,
+    // but that's not possible because javaOptions is a SettingKey
+    // and we have to depend on a task
+    val startJavaOptions = TaskKey[Seq[String]]("start-java-options",
+      "Java options to use for the start task when forking")
+
     val stop = TaskKey[Unit]("stop",
       "Stops the task run in the background")
 
@@ -22,13 +28,16 @@ object BackgroundService {
       "Stops and restarts the current background service")
 
     val forkOptions = TaskKey[ForkScalaRun]("fork-options",
-      "Collected options needed for forking to run a project")
+      "Collected options needed for the start task for forking")
+
+    val jRebelJar = SettingKey[String]("jrebel-jar",
+      "The path to the JRebel jar")
   }
 
   lazy val backgroundServiceSettings =
     Seq(
       forkOptions <<= forkOptionsInit,
-      startArgs := Seq.empty,
+      startArgs in Global := Seq.empty,
       start <<= inputTask { args =>
         (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs, args)
           .map(startService)
@@ -57,6 +66,12 @@ object BackgroundService {
             stopService(SysoutLogger, state)
 
           onUnload(state)
+      },
+
+      jRebelJar in Global := "",
+
+      startJavaOptions <<= (javaOptions, streams, jRebelJar) map { (options, streams, jRebelJar) =>
+        options ++ createJRebelAgentOption(streams.log, jRebelJar).toSeq
       }
     )
 
@@ -128,9 +143,24 @@ object BackgroundService {
    * We got that directly from the sbt sources
    */
   def forkOptionsInit: Initialize[Task[ForkScalaRun]] =
-    (taskTemporaryDirectory, scalaInstance, baseDirectory, javaOptions, outputStrategy, fork, javaHome, trapExit, connectInput) map {
+    (taskTemporaryDirectory, scalaInstance, baseDirectory, startJavaOptions, outputStrategy, fork, javaHome, trapExit, connectInput) map {
 				(tmp, si, base, options, strategy, forkRun, javaHomeDir, trap, connectIn) =>
       ForkOptions(scalaJars = si.jars, javaHome = javaHomeDir, connectInput = connectIn, outputStrategy = strategy,
 					runJVMOptions = options, workingDirectory = Some(base))
 		}
+
+  def createJRebelAgentOption(log: Logger, path: String): Option[String] =
+    if (path.trim.isEmpty)
+      None
+    else {
+      val jRebelJarFile = file(path)
+      if (jRebelJarFile.exists && jRebelJarFile.isFile)
+        Some("-javaagent:"+path)
+      else if (new File(jRebelJarFile, "jrebel.jar").exists)
+        Some("-javaagent:"+new File(jRebelJarFile, "jrebel.jar").getAbsolutePath)
+      else {
+        log.warn("At '"+path+"' no jrebel.jar was found")
+        None
+      }
+    }
 }
