@@ -6,7 +6,7 @@ of your sbt shell. This enables a very fast turnaround especially for server pro
 Optionally, if you configure a JRebel installation, you can avoid the restart for most cases and
 can just use `~ compile` to update your class files on-the-fly while your server is running.
 
-This project was developed primarily for use with spray but this plugin right now contains
+This project was developed primarily for use with spray in mind but this plugin right now contains
 no special functionality for spray and may used be more generally for all kinds of server projects.
 
 ## Requirements
@@ -36,13 +36,14 @@ object Plugins extends Build {
 Then, add the following in your `build.sbt`:
 
 ```scala
-seq(cc.spray.HotReload.hotReloadSettings: _*)
+seq(HotReload.hotReloadSettings: _*)
 ```
 
 ## Common usage
 
-Use `~ start` on the sbt shell to continuously recompile and restart your server process. With
-JRebel enabled use `start` to start the server and then `~ compile` afterwards. Changes to the
+Use `~ hr:start` on the sbt shell to continuously recompile and restart your server process.
+
+With JRebel enabled use `hr:start` to start the server and then `~ compile` afterwards. Changes to the
 class files will then be automatically picked up by JRebel.
 
 ## Tasks
@@ -58,12 +59,12 @@ Stops the project. The default behaviour is to forcibly kill the background proc
 
 ### startArgs
 
-Use `cc.spray.HotReload.Keys.startArgs += "-x"` to add arguments which should be passed to the server
+Use `HotReload.startArgs += "-x"` to add arguments which should be passed to the server
 process when started.
 
 ### jRebelJar
 
-Use `cc.spray.HotReload.Keys.jRebelJar := "/home/user/opt/JRebel/jrebel.jar"` to provide
+Use `HotReload.jRebelJar := "/home/user/opt/JRebel/jrebel.jar"` to provide
 the location of your JRebel installation. When starting the server the JRebel java agent will
 then be included.
 
