@@ -12,13 +12,13 @@ object RevolverPlugin extends Plugin {
     lazy val settings = Seq(
 
       // copied almost verbatim from the SBT sources.
-      forkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory, startJavaOptions, outputStrategy, javaHome) map {
-        (tmp, si, base, options, strategy, javaHomeDir) => ForkOptions(
+      forkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory, javaOptions, outputStrategy, javaHome) map {
+        (tmp, si, base, jvmOptions, strategy, javaHomeDir) => ForkOptions(
           scalaJars = si.jars,
           javaHome = javaHomeDir,
           connectInput = false,
           outputStrategy = strategy,
-          runJVMOptions = options,
+          runJVMOptions = jvmOptions,
           workingDirectory = Some(base)
         )
       },
@@ -45,8 +45,8 @@ object RevolverPlugin extends Plugin {
 
       jRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
-      startJavaOptions <<= (javaOptions, streams, jRebelJar) map { (options, streams, jRebelJar) =>
-        options ++ createJRebelAgentOption(streams.log, jRebelJar).toSeq
+      javaOptions in RE <<= (javaOptions, jRebelJar) { (jvmOptions, jrJar) =>
+        jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq
       }
     )
   }
