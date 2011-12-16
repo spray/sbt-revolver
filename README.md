@@ -127,12 +127,12 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 In your `.sbt` file you set these settings for example with `Revolver.startArgs := "-x"`.
 
 
-### License
+## License
 
 _sbt-revolver_ is licensed under [APL 2.0].
 
 
-### Patch Policy
+## Patch Policy
 
 Feedback and contributions to the project, no matter what kind, are always very welcome.
 However, patches can only be accepted from their original author.
