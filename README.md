@@ -57,13 +57,14 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 ## Usage
 
-_sbt-revolver_ defines two new commands (SBT tasks):
+_sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
 * `re:start <args>` starts your application in a forked JVM. The optionally specified arguments are appended to the
   ones configured via the `re:start-args` setting (see the _configuration_ section below). If the application is already
   running it is first stopped before being restarted.
 * `re:stop` stops application. This is done by simply killing the forked JVM. If your application needs to run clean-up
   logic this should be tied in via a [Shutdown Hook].
+* `re:status` shows an informational message about the current running state of the application.
 
 ### Triggered Restart
 

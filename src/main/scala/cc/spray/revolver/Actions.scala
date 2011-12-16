@@ -44,6 +44,13 @@ object Actions {
     }
   }
 
+  def showStatus(streams: TaskStreams, state: State) {
+    colorLogger(streams.log).info {
+      if (state.get(appProcessKey).isDefined) "[GREEN]Application is currently running"
+      else "[YELLOW]Application is currently NOT running"
+    }
+  }
+
   def createJRebelAgentOption(log: Logger, path: String): Option[String] = {
     if (!path.trim.isEmpty) {
       val file = new File(path)
