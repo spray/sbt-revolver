@@ -3,10 +3,10 @@
  "organization":"cc.spray",
  "name":"sbt-hot-reload",
  "version":"0.5.0",
- "description":"An sbt plugin which allows to run the project in the background while doing continuous recompilation.",
- "site":"http://github.com/spray/sbt-hot-reload",
- "tags":["sbt-plugin","sbt","jrebel"],
- "docs":"http://github.com/spray/sbt-hot-reload",
+ "description":"An SBT plugin for dangerously fast development turnaround in Scala",
+ "site":"http://github.com/spray/sbt-revolver",
+ "tags":["sbt-plugin","sbt","plugin","jrebel"],
+ "docs":"http://github.com/spray/sbt-revolver",
  "licenses": [{
    "name": "Apache License 2.0",
    "url": "https://github.com/spray/sbt-hot-reload/raw/master/LICENSE"

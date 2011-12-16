@@ -4,7 +4,7 @@ organization := "cc.spray"
 
 version := "0.5.0"
 
-description := "An SBT plugin for dangerously fast development turnaround"
+description := "An SBT plugin for dangerously fast development turnaround in Scala"
 
 startYear := Some(2011)
 
