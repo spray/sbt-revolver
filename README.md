@@ -13,7 +13,7 @@ be used with any Scala application as long as there is some object with a `main`
 
 ## Installation
 
-_sbt-revolver_ required [SBT] 0.11.1 or greater.
+_sbt-revolver_ requires [SBT] 0.11.1 or greater.
 Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins.sbt`):
 
 ```scala
@@ -34,12 +34,12 @@ import cc.spray.revolver.RevolverPlugin._
 
 and then add the `Revolver.settings` to the (sub-)project containing the `main` object.
 
-### JRebel
+#### JRebel
 
 In order to enable hot reloading you need get a licensed JRebel JAR onto your system.
 You can do this with these simple steps:
 
-1. Go to [this page](http://sales.zeroturnaround.com/) and apply for a free JRebel for Scala license
+1. Go to [this page](http://sales.zeroturnaround.com/) and apply for a free "JRebel for Scala" license
    (in the "Get JRebel for free" box on the right).
 2. Wait for the email from ZeroTurnaround containing your personal `jrebel.lic` file.
 3. Create a `~/.jrebel` directory and copy the `jrebel.lic` file from the email into this directory.
@@ -59,21 +59,24 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
-* `re:start <args>` starts your application in a forked JVM. The optionally specified arguments are appended to the
-  ones configured via the `re:start-args` setting (see the _configuration_ section below). If the application is already
-  running it is first stopped before being restarted.
-* `re:stop` stops application. This is done by simply killing the forked JVM. If your application needs to run clean-up
-  logic this should be tied in via a [Shutdown Hook].
+* `re:start <args>` starts your application in a forked JVM.
+  The optionally specified arguments are appended to the ones configured via the `re:start-args` setting (see the
+  _configuration_ section below). If the application is already running it is first stopped before being restarted.
+
+* `re:stop` stops application.
+  This is done by simply killing the forked JVM. If your application needs to run clean-up logic this should be tied in
+  via a [Shutdown Hook].
+
 * `re:status` shows an informational message about the current running state of the application.
 
-### Triggered Restart
+#### Triggered Restart
 
 You can use `~re:start` to go into _triggered restart_ mode. Your application starts up and SBT watches for changes in
 your source (or resource) files. If a change is detected SBT recompiles the required classes and _sbt-revolver_
 automatically restarts your application.
 When you press _ENTER_ SBT leaves _triggered restart_ and returns to the normal prompt keeping your application running.
 
-### Hot Reloading
+#### Hot Reloading
 
 When you have [JRebel] installed and configured as described in the _Installation_ section above _sbt-revolver_ supports
 hot reloading:
@@ -93,18 +96,18 @@ hot reloading:
 
 JRebel is a JVM `-javaagent` plugin that extends the root classloaders with the ability to manage reloaded classes.
 When a change to a class file is detected on disk JRebel loads the changed class into your running application.
-This is great for quickly bringing code changes live but also comes with some restriction that you should understand to
-use JRebel and _sbt-revolver_ effectively.
+This is great for quickly bringing code changes live but also comes with some restriction that you should understand in
+order to be able to use JRebel and _sbt-revolver_ effectively.
 
 When JRebel reloads a class `Foo` all the code of `Foo` is updated to the new version. However, all instances of `Foo`
 that already exist at the time of class reloading will remain alive in the JVMs heap. All fields of these objects
 will also remain unchanged. After reloading all methods called on `Foo` objects will be changed to their new
-implementations. If the new `Foo` contains instance fields that were not present in the old `Foo` these instance fields
-will **not be initialized** for all old `Foo` instances! Also, if you change the way that `Foo` instances are initialized
-then this change will only apply to `Foo` instances creates _after_ class reloading. All old instances that have been
-initialized by the "old" `Foo` will remain unchanged.
+implementations. If the new `Foo` class contains instance fields that were not present in the old `Foo` these instance
+fields will **not be initialized** for all old `Foo` instances! Also, if you change the way that `Foo` instances are
+initialized then this change will only apply to `Foo` instances created _after_ class reloading. All old instances that
+have been initialized by the old `Foo` will remain unchanged.
 
-A simple thing to remember when working with JRebel is that JRebel changes _code_, not data. All code running after
+The thing to remember when working with JRebel is that JRebel changes _code_, not data. All code running after
 class reloading will be the new code. Any code having run before class reloading will not be run again.
 
 More information about JRebel can be found in the [JRebel FAQ].
