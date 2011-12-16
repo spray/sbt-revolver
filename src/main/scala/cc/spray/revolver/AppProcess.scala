@@ -1,4 +1,4 @@
-package cc.spray
+package cc.spray.revolver
 
 import java.lang.{Runtime => JRuntime}
 import sbt.Process

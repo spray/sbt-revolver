@@ -1,11 +1,11 @@
-package cc.spray
+package cc.spray.revolver
 
 import sbt._
 import sbt.Keys._
 
-object HotReloadPlugin extends Plugin {
+object RevolverPlugin extends Plugin {
 
-  object HotReload extends HotReloadKeys {
+  object Revolver extends RevolverKeys {
     import Actions._
     import Utilities._
 

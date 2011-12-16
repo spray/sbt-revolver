@@ -1,4 +1,4 @@
-package cc.spray
+package cc.spray.revolver
 
 import sbt._
 

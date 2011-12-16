@@ -1,4 +1,4 @@
-package cc.spray
+package cc.spray.revolver
 
 import sbt._
 import scala.Console.{RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE}
