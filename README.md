@@ -59,11 +59,11 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
-* `re:start <args>` starts your application in a forked JVM.
+* `re:start <args>` starts your application in a forked JVM. 
   The optionally specified arguments are appended to the ones configured via the `re:start-args` setting (see the
   _configuration_ section below). If the application is already running it is first stopped before being restarted.
 
-* `re:stop` stops application.
+* `re:stop` stops application. 
   This is done by simply killing the forked JVM. If your application needs to run clean-up logic this should be tied in
   via a [Shutdown Hook].
 
@@ -82,7 +82,7 @@ When you have [JRebel] installed and configured as described in the _Installatio
 hot reloading:
 
 * Start your application with `re:start`.
-* Enter _triggered compilation_ with `~compile`. SBT watches for changes in your source (or resource) files.
+* Enter _triggered compilation_ with `~products`. SBT watches for changes in your source (and resource) files.
   If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
   application. Since your application is not restarted the time required to bring changes online is minimal (see
   the _Understanding JRebel_ section below for more details). When you press _ENTER_ SBT leaves _triggered compilation_
