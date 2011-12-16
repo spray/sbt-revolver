@@ -1,14 +1,14 @@
-name := "sbt-hot-reload"
+name := "sbt-revolver"
 
 organization := "cc.spray"
 
 version := "0.5.0"
 
-description := "An sbt plugin which allows to run the project in the background while doing continuous recompilation."
+description := "An SBT plugin for dangerously fast development turnaround"
 
-homepage := Some(url("http://github.com/spray/sbt-hot-reload"))
+homepage := Some(url("http://github.com/spray/sbt-revolver"))
 
-licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-hot-reload/raw/master/LICENSE")
+licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-revolver/raw/master/LICENSE")
 
 sbtPlugin := true
 
@@ -38,6 +38,6 @@ publishTo <<= version { version =>
 
 seq(lsSettings :_*)
 
-(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "jrebel")
+(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "plugin", "jrebel")
 
 (LsKeys.docsUrl in LsKeys.lsync) <<= homepage
