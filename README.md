@@ -29,7 +29,7 @@ seq(Revolver.settings: _*)
 If you use SBTs full-configuration you need to
 
 ```scala
-import cc.spray.revolver.Revolver
+import cc.spray.revolver.RevolverPlugin._
 ```
 
 and then add the `Revolver.settings` to the (sub-)project containing the `main` object.
