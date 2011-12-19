@@ -8,7 +8,7 @@ It sports the following features:
   of its sources have been changed, no restart necessary (requires [JRebel], which is free for Scala development)
 
 Even though _sbt-revolver_ works great with [spray] on [spray-can] there is nothing _spray_-specific to it. It can
-be used with any Scala application as long as there is some object with a `main` method.
+be used with any Scala application as long as there is some object with a `main` method. (Note that _sbt-revolver_ is incompatible with the [xsbt-web-plugin], which has its own way of managing the running of your application in the background).
 
 
 ## Installation
@@ -59,11 +59,11 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
-* `re:start <args>` starts your application in a forked JVM. 
+* `re:start <args>` starts your application in a forked JVM.  
   The optionally specified arguments are appended to the ones configured via the `re:start-args` setting (see the
-  _configuration_ section below). If the application is already running it is first stopped before being restarted.
+  "Configuration" section below). If the application is already running it is first stopped before being restarted.
 
-* `re:stop` stops application. 
+* `re:stop` stops application.  
   This is done by simply killing the forked JVM. If your application needs to run clean-up logic this should be tied in
   via a [Shutdown Hook].
 
@@ -71,24 +71,24 @@ _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configurat
 
 #### Triggered Restart
 
-You can use `~re:start` to go into _triggered restart_ mode. Your application starts up and SBT watches for changes in
+You can use `~re:start` to go into "triggered restart" mode. Your application starts up and SBT watches for changes in
 your source (or resource) files. If a change is detected SBT recompiles the required classes and _sbt-revolver_
 automatically restarts your application.
-When you press _ENTER_ SBT leaves _triggered restart_ and returns to the normal prompt keeping your application running.
+When you press <ENTER> SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
 
 #### Hot Reloading
 
-When you have [JRebel] installed and configured as described in the _Installation_ section above _sbt-revolver_ supports
+When you have [JRebel] installed and configured as described in the "Installation" section above _sbt-revolver_ supports
 hot reloading:
 
 * Start your application with `re:start`.
-* Enter _triggered compilation_ with `~products`. SBT watches for changes in your source (and resource) files.
+* Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
   If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
   application. Since your application is not restarted the time required to bring changes online is minimal (see
-  the _Understanding JRebel_ section below for more details). When you press _ENTER_ SBT leaves _triggered compilation_
+  the "Understanding JRebel" section below for more details). When you press <ENTER> SBT leaves triggered compilation
   and returns to the normal prompt keeping your application running.
-* If you changed your application in a way that requires a full restart (see below) press _ENTER_ to leave
-  _triggered compilation_ and `re:start`.
+* If you changed your application in a way that requires a full restart (see below) press <ENTER> to leave
+  triggered compilation and `re:start`.
 * Of course you always stop the application with `re:stop`.
 
 
@@ -142,6 +142,7 @@ _sbt-revolver_ project under the project’s open source license.
 
   [SBT]: https://github.com/harrah/xsbt/wiki
   [JRebel]: http://zeroturnaround.com/jrebel/
+  [xsbt-web-plugin]: https://github.com/siasia/xsbt-web-plugin/
   [spray]: http://spray.cc
   [spray-can]: https://github.com/spray/spray-can
   [Shutdown Hook]: http://docs.oracle.com/javase/6/docs/api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
