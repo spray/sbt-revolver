@@ -119,6 +119,11 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 
 * `re:start-args`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
   application on every start. Any arguments given to the `re:start` task directly will be appended to this setting.
+* `re:main-class(for start)`, which lets you optionally define a main class to run in `re:start` independently of the
+  one set for running the project normally. This value defaults to the value of `compile:main-class(for run)`. If you
+  don't specify a value here explicitly, the same logic as for the normal run main class applies: If only one main class
+  is found, this one is chosen. Otherwise, the main-class chooser is shown to the user. You can set this property in the
+  configuration with `mainClass in Revolver.start := Some("com.example.Main")`.
 * `re:java-options`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM when
   starting your application
 * `re:jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
