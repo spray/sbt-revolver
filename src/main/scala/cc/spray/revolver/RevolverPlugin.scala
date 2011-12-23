@@ -28,7 +28,7 @@ object RevolverPlugin extends Plugin {
     lazy val settings = Seq(
 
       start <<= inputTask { args =>
-        (streams, state, forkOptions, mainClass in Compile, fullClasspath in Runtime, startArgs, args)
+        (streams, state, forkOptions, mainClass in run in Compile , fullClasspath in Runtime, startArgs, args)
           .map(restartApp)
           .updateState(registerAppProcess)
           .dependsOn(products in Compile)
