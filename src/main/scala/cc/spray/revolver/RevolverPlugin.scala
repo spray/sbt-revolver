@@ -29,7 +29,7 @@ object RevolverPlugin extends Plugin {
 
       mainClass in start <<= mainClass in run in Compile,
 
-      start <<= inputTask { args =>
+      start <<= InputTask(startArgsParser) { args =>
         (streams, state, forkOptions, mainClass in start, fullClasspath in Runtime, startArgs, args)
           .map(restartApp)
           .updateState(registerAppProcess)

@@ -59,9 +59,10 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
-* `re:start <args>` starts your application in a forked JVM.  
-  The optionally specified arguments are appended to the ones configured via the `re:start-args` setting (see the
-  "Configuration" section below). If the application is already running it is first stopped before being restarted.
+* `re:start <args> --- <jvmArgs>` starts your application in a forked JVM.
+  The optionally specified (JVM) arguments are appended to the ones configured via the `re:start-args`/`re:java-options`
+  setting (see the "Configuration" section below). If the application is already running it is first stopped before being
+  restarted.
 
 * `re:stop` stops application.  
   This is done by simply killing the forked JVM. If your application needs to run clean-up logic this should be tied in

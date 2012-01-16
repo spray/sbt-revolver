@@ -21,11 +21,11 @@ import scala.Console.{RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE}
 
 object Utilities {
 
-  def forkRun(config: ForkScalaRun, mainClass: String, classpath: Seq[File], options: Seq[String], log: Logger) = {
+  def forkRun(config: ForkScalaRun, mainClass: String, classpath: Seq[File], options: Seq[String], log: Logger, extraJvmArgs: Seq[String]) = {
     log.info(options.mkString("Starting " + mainClass + ".main(", ", ", ")"))
     val scalaOptions = "-classpath" :: Path.makeString(classpath) :: mainClass :: options.toList
     val strategy = config.outputStrategy getOrElse LoggedOutput(log)
-    Fork.scala.fork(config.javaHome, config.runJVMOptions, config.scalaJars, scalaOptions, config.workingDirectory,
+    Fork.scala.fork(config.javaHome, config.runJVMOptions ++ extraJvmArgs, config.scalaJars, scalaOptions, config.workingDirectory,
       config.connectInput, strategy)
   }
 

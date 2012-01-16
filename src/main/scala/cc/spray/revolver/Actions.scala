@@ -32,17 +32,17 @@ object Actions {
     state.remove(appProcessKey)
 
   def restartApp(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], extraArgs: Seq[String]): AppProcess = {
+                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     stopAppWithStreams(streams, state)
-    startApp(streams, unregisterAppProcess(state, ()), option, mainClass, cp, args, extraArgs)
+    startApp(streams, unregisterAppProcess(state, ()), option, mainClass, cp, args, startConfig)
   }
 
   def startApp(streams: TaskStreams, state: State, options: ForkScalaRun, mainClass: Option[String],
-               cp: Classpath, args: Seq[String], extraArgs: Seq[String]): AppProcess = {
+               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(!state.has(appProcessKey))
     colorLogger(streams.log).info("[YELLOW]Starting application in the background ...")
     AppProcess {
-      forkRun(options, mainClass.get, cp.map(_.data), args ++ extraArgs, SysoutLogger)
+      forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, SysoutLogger, startConfig.jvmArgs)
     }
   }
 
@@ -78,5 +78,22 @@ object Actions {
         } else Some("-javaagent:" + file2.getAbsolutePath)
       } else Some("-javaagent:" + path)
     } else None
+  }
+
+  case class ExtraCmdLineOptions(jvmArgs: Seq[String], startArgs: Seq[String])
+
+  import complete.Parsers._
+  import complete.Parser._
+  val spaceDelimitedWithoutDashes =
+          (token(Space) ~> (token(NotSpace, "<args>") - "---")).* <~ SpaceClass.*
+  /*
+   * A parser which parses additional options to the start task of the form
+   * <arg1> <arg2> ... <argN> --- <jvmArg1> <jvmArg2> ... <jvmArgN>
+   */
+  val startArgsParser: State => complete.Parser[ExtraCmdLineOptions] = { (state: State) =>
+    (spaceDelimitedWithoutDashes ~ (SpaceClass.* ~ "---" ~ SpaceClass.* ~> spaceDelimited("<jvm-args>")).?) map {
+      case (a, b) =>
+        ExtraCmdLineOptions(b.getOrElse(Nil), a)
+    }
   }
 }
