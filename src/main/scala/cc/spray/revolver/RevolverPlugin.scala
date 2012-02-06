@@ -27,35 +27,35 @@ object RevolverPlugin extends Plugin {
 
     lazy val settings = Seq(
 
-      mainClass in start <<= mainClass in run in Compile,
+      mainClass in reStart <<= mainClass in run in Compile,
 
-      start <<= InputTask(startArgsParser) { args =>
-        (streams, state, forkOptions, mainClass in start, fullClasspath in Runtime, startArgs, args)
+      reStart <<= InputTask(startArgsParser) { args =>
+        (streams, state, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
           .map(restartApp)
           .updateState(registerAppProcess)
           .dependsOn(products in Compile)
       },
 
-      stop <<= (streams, state)
+      reStop <<= (streams, state)
           .map(stopAppWithStreams)
           .updateState(unregisterAppProcess),
 
-      status <<= (streams, state) map showStatus,
+      reStatus <<= (streams, state) map showStatus,
 
       // default: no arguments to the app
-      startArgs in Global := Seq.empty,
+      reStartArgs in Global := Seq.empty,
 
       // initialize with env variable
-      jRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
+      reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
       // bake JRebel activation into java options for the forked JVM
-      javaOptions in RE <<= (javaOptions, jRebelJar) { (jvmOptions, jrJar) =>
+      javaOptions in reStart <<= (javaOptions, reJRebelJar) { (jvmOptions, jrJar) =>
         jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq
       },
 
       // bundles the various parameters for forking
-      forkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory, javaOptions in RE, outputStrategy, javaHome) map {
-        (tmp, si, base, jvmOptions, strategy, javaHomeDir) => ForkOptions(
+      reForkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory, javaOptions in reStart, outputStrategy,
+        javaHome) map { (tmp, si, base, jvmOptions, strategy, javaHomeDir) => ForkOptions(
           scalaJars = si.jars,
           javaHome = javaHomeDir,
           connectInput = false,
