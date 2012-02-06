@@ -2,7 +2,7 @@ name := "sbt-revolver"
 
 organization := "cc.spray"
 
-version := "0.6.0-SNAPSHOT"
+version := "0.6.0"
 
 description := "An SBT plugin for dangerously fast development turnaround in Scala"
 
@@ -29,8 +29,9 @@ publishMavenStyle := true
 
 publishTo <<= version { version =>
   Some {
-    "snapshots" at {
-      "http://nexus.scala-tools.org/content/repositories/" + {
+    "spray nexus" at {
+      // public uri is repo.spray.cc, we use an SSH tunnel to the nexus here
+      "http://localhost:42424/content/repositories/" + {
         if (version.trim.endsWith("SNAPSHOT")) "snapshots/" else"releases/"
       }
     }
