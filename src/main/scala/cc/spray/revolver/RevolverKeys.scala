@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Johannes Rudolph and Mathias Doenitz
+ * Copyright (C) 2009-2012 Johannes Rudolph and Mathias Doenitz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
