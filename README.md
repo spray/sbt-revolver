@@ -123,14 +123,25 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 * `re-main-class(for re-start)`, which lets you optionally define a main class to run in `re-start` independently of the
   one set for running the project normally. This value defaults to the value of `compile:main-class(for run)`. If you
   don't specify a value here explicitly the same logic as for the normal run main class applies: If only one main class
-  is found it one is chosen. Otherwise, the main-class chooser is shown to the user. You can set this property in the
-  configuration with `mainClass in Revolver.reStart := Some("com.example.Main")`.
+  is found it one is chosen. Otherwise, the main-class chooser is shown to the user.
 * `java-options(for re-start)`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
   when starting your application
 * `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
 
 
-In your `.sbt` file you set these settings for example with `Revolver.reStartArgs := "-x"`.
+Examples:
+
+To configure a 2 GB memory limit for your app when started with `re-start`:
+
+    javaOptions in Revolver.reStart += "-Xmx2g"
+
+To set a special main class for your app when started with `re-start`:
+
+    mainClass in Revolver.reStart := Some("com.example.Main")
+
+To set fixed start arguments (than you can still append to with the `re-start` task):
+
+    Revolver.reStartArgs := Seq("-x")
 
 
 ## License

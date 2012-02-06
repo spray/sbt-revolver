@@ -5,3 +5,4 @@ This second release addresses a few problems:
 - Added option for configuring mainClass independently for `re-start` task
 - Fixed #3 (Not working if there are multiple main classes)
 - Closed #5 (Add option to specify CLI args for the forked JVM)
+- Improved documentation
