@@ -8,7 +8,7 @@ It sports the following features:
   of its sources have been changed, no restart necessary (requires [JRebel], which is free for Scala development)
 
 Even though _sbt-revolver_ works great with [spray] on [spray-can] there is nothing _spray_-specific to it. It can
-be used with any Scala application as long as there is some object with a `main` method. (Note that _sbt-revolver_ is incompatible with the [xsbt-web-plugin], which has its own way of managing the running of your application in the background).
+be used with any Scala application as long as there is some object with a `main` method.
 
 
 ## Installation
@@ -17,7 +17,7 @@ _sbt-revolver_ requires [SBT] 0.11.1 or greater.
 Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins.sbt`):
 
 ```scala
-addSbtPlugin("cc.spray" % "sbt-revolver" % "0.5.0")
+addSbtPlugin("cc.spray" % "sbt-revolver" % "0.6.0")
 ```
 
 and this to your `build.sbt`:
@@ -59,20 +59,20 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
-* `re:start <args> --- <jvmArgs>` starts your application in a forked JVM.
-  The optionally specified (JVM) arguments are appended to the ones configured via the `re:start-args`/`re:java-options`
-  setting (see the "Configuration" section below). If the application is already running it is first stopped before being
-  restarted.
+* `re-start <args> --- <jvmArgs>` starts your application in a forked JVM.
+  The optionally specified (JVM) arguments are appended to the ones configured via the `re-start-args`/
+  `java-options(for re-start)` setting (see the "Configuration" section below). If the application is already running it
+  is first stopped before being restarted.
 
-* `re:stop` stops application.  
+* `re-stop` stops application.
   This is done by simply killing the forked JVM. If your application needs to run clean-up logic this should be tied in
   via a [Shutdown Hook].
 
-* `re:status` shows an informational message about the current running state of the application.
+* `re-status` shows an informational message about the current running state of the application.
 
 #### Triggered Restart
 
-You can use `~re:start` to go into "triggered restart" mode. Your application starts up and SBT watches for changes in
+You can use `~re-start` to go into "triggered restart" mode. Your application starts up and SBT watches for changes in
 your source (or resource) files. If a change is detected SBT recompiles the required classes and _sbt-revolver_
 automatically restarts your application.
 When you press <ENTER> SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
@@ -82,15 +82,15 @@ When you press <ENTER> SBT leaves "triggered restart" and returns to the normal 
 When you have [JRebel] installed and configured as described in the "Installation" section above _sbt-revolver_ supports
 hot reloading:
 
-* Start your application with `re:start`.
+* Start your application with `re-start`.
 * Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
   If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
   application. Since your application is not restarted the time required to bring changes online is minimal (see
   the "Understanding JRebel" section below for more details). When you press <ENTER> SBT leaves triggered compilation
   and returns to the normal prompt keeping your application running.
 * If you changed your application in a way that requires a full restart (see below) press <ENTER> to leave
-  triggered compilation and `re:start`.
-* Of course you always stop the application with `re:stop`.
+  triggered compilation and `re-start`.
+* Of course you always stop the application with `re-stop`.
 
 
 ## Understanding JRebel
@@ -118,19 +118,19 @@ More information about JRebel can be found in the [JRebel FAQ].
 
 The following SBT settings defined by _sbt-revolver_ are of potential interest:
 
-* `re:start-args`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
-  application on every start. Any arguments given to the `re:start` task directly will be appended to this setting.
-* `re:main-class(for start)`, which lets you optionally define a main class to run in `re:start` independently of the
+* `re-start-args`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
+  application on every start. Any arguments given to the `re-start` task directly will be appended to this setting.
+* `re-main-class(for re-start)`, which lets you optionally define a main class to run in `re-start` independently of the
   one set for running the project normally. This value defaults to the value of `compile:main-class(for run)`. If you
-  don't specify a value here explicitly, the same logic as for the normal run main class applies: If only one main class
-  is found, this one is chosen. Otherwise, the main-class chooser is shown to the user. You can set this property in the
-  configuration with `mainClass in Revolver.start := Some("com.example.Main")`.
-* `re:java-options`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM when
-  starting your application
-* `re:jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
+  don't specify a value here explicitly the same logic as for the normal run main class applies: If only one main class
+  is found it one is chosen. Otherwise, the main-class chooser is shown to the user. You can set this property in the
+  configuration with `mainClass in Revolver.reStart := Some("com.example.Main")`.
+* `java-options(for re-start)`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
+  when starting your application
+* `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
 
 
-In your `.sbt` file you set these settings for example with `Revolver.startArgs := "-x"`.
+In your `.sbt` file you set these settings for example with `Revolver.reStartArgs := "-x"`.
 
 
 ## License

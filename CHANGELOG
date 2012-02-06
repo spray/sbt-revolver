@@ -1,3 +1,11 @@
+Version 0.6.0 (2012-02-06)
+--------------------------
+- Renamed re:start, re:stop and re:status to re-start, re-stop and re-status for more key "uniqueness"
+- Added option for configuring mainClass independently
+- Fixed #3 (Not working if there are multiple main classes)
+- Closed #5 (Add option to specify CLI args for the forked JVM)
+
+
 Version 0.5.0 (2011-12-16)
 --------------------------
 first public release
