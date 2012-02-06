@@ -17,6 +17,8 @@ _sbt-revolver_ requires [SBT] 0.11.1 or greater.
 Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins.sbt`):
 
 ```scala
+resolvers += "spray repo" at "http://repo.spray.cc"
+
 addSbtPlugin("cc.spray" % "sbt-revolver" % "0.6.0")
 ```
 
