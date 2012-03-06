@@ -77,7 +77,7 @@ _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configurat
 You can use `~re-start` to go into "triggered restart" mode. Your application starts up and SBT watches for changes in
 your source (or resource) files. If a change is detected SBT recompiles the required classes and _sbt-revolver_
 automatically restarts your application.
-When you press <ENTER> SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
+When you press &lt;ENTER&gt; SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
 
 #### Hot Reloading
 
