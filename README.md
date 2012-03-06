@@ -88,9 +88,9 @@ hot reloading:
 * Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
   If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
   application. Since your application is not restarted the time required to bring changes online is minimal (see
-  the "Understanding JRebel" section below for more details). When you press <ENTER> SBT leaves triggered compilation
+  the "Understanding JRebel" section below for more details). When you press &lt;ENTER&gt; SBT leaves triggered compilation
   and returns to the normal prompt keeping your application running.
-* If you changed your application in a way that requires a full restart (see below) press <ENTER> to leave
+* If you changed your application in a way that requires a full restart (see below) press &lt;ENTER&gt; to leave
   triggered compilation and `re-start`.
 * Of course you always stop the application with `re-stop`.
 
