@@ -16,6 +16,8 @@ licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray
 
 sbtPlugin := true
 
+scalaVersion := "2.9.2"
+
 scalacOptions := Seq("-deprecation", "-encoding", "utf8")
 
 
