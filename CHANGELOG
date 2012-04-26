@@ -1,3 +1,9 @@
+Version 0.6.1 (2012-04-26)
+--------------------------
+- Fixed #10 (Bad type for Revolver.settings)
+- Upgraded to Scala 2.9.2
+
+
 Version 0.6.0 (2012-02-06)
 --------------------------
 - Renamed re:start, re:stop and re:status to re-start, re-stop and re-status for more key "uniqueness"

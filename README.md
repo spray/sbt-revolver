@@ -19,7 +19,7 @@ Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins
 ```scala
 resolvers += "spray repo" at "http://repo.spray.cc"
 
-addSbtPlugin("cc.spray" % "sbt-revolver" % "0.6.0")
+addSbtPlugin("cc.spray" % "sbt-revolver" % "0.6.1")
 ```
 
 and this to your `build.sbt`:
