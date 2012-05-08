@@ -16,8 +16,6 @@ licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray
 
 sbtPlugin := true
 
-scalaVersion := "2.9.2"
-
 scalacOptions := Seq("-deprecation", "-encoding", "utf8")
 
 
@@ -45,8 +43,8 @@ publishTo <<= version { version =>
 // ls-sbt
 ///////////////
 
-seq(lsSettings :_*)
+//seq(lsSettings :_*)
 
-(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "plugin", "jrebel")
+//(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "plugin", "jrebel")
 
-(LsKeys.docsUrl in LsKeys.lsync) <<= homepage
+//(LsKeys.docsUrl in LsKeys.lsync) <<= homepage
