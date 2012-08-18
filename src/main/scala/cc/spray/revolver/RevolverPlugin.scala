@@ -49,7 +49,7 @@ object RevolverPlugin extends Plugin {
       reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
       // bake JRebel activation into java options for the forked JVM
-      javaOptions in reStart <<= (javaOptions, reJRebelJar) { (jvmOptions, jrJar) =>
+      javaOptions in reStart <<= (javaOptions, reJRebelJar) map { (jvmOptions, jrJar) =>
         jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq
       },
 
