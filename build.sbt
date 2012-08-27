@@ -26,19 +26,9 @@ CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.12")
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
-publishMavenStyle := true
+publishMavenStyle := false
 
-publishTo <<= version { version =>
-  Some {
-    "spray nexus" at {
-      // public uri is repo.spray.cc, we use an SSH tunnel to the nexus here
-      "http://localhost:42424/content/repositories/" + {
-        if (version.trim.endsWith("SNAPSHOT")) "snapshots/" else"releases/"
-      }
-    }
-  }
-}
-
+publishTo := Some(Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns))
 
 ///////////////
 // ls-sbt
