@@ -44,8 +44,8 @@ publishTo <<= version { version =>
 // ls-sbt
 ///////////////
 
-//seq(lsSettings :_*)
+seq(lsSettings :_*)
 
-//(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "plugin", "jrebel")
+(LsKeys.tags in LsKeys.lsync) := Seq("sbt-plugin", "sbt", "plugin", "jrebel")
 
-//(LsKeys.docsUrl in LsKeys.lsync) <<= homepage
+(LsKeys.docsUrl in LsKeys.lsync) <<= homepage
