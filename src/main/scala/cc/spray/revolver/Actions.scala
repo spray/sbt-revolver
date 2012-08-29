@@ -53,8 +53,11 @@ object Actions {
   def stopApp(log: Logger, state: State) {
     state.get(appProcessKey) match {
       case Some(appProcess) =>
-        log.info("[YELLOW]Stopping application (by killing the forked JVM) ...")
-        appProcess.stop()
+        if (appProcess.isRunning) {
+          log.info("[YELLOW]Stopping application (by killing the forked JVM) ...")
+
+          appProcess.stop()
+        }
       case None =>
         log.info("[YELLOW]Application not yet started")
     }
@@ -62,7 +65,7 @@ object Actions {
 
   def showStatus(streams: TaskStreams, state: State) {
     colorLogger(streams.log).info {
-      if (state.get(appProcessKey).isDefined) "[GREEN]Application is currently running"
+      if (state.get(appProcessKey).exists(_.isRunning)) "[GREEN]Application is currently running"
       else "[YELLOW]Application is currently NOT running"
     }
   }

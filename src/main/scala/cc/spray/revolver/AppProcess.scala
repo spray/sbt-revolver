@@ -25,10 +25,27 @@ import sbt.Process
 case class AppProcess(process: Process) {
   val shutdownHook = new Thread(new Runnable {
     def run() {
-      println("Stopping the application that's still running in the background ...")
-      process.destroy()
+      if (isRunning) {
+        println("Stopping the application that's still running in the background ...")
+        process.destroy()
+      }
     }
   })
+
+  @volatile var finishState: Option[Int] = None
+
+  val watchThread = {
+    val thread = new Thread(new Runnable {
+      def run() {
+        val code = process.exitValue()
+        finishState = Some(code)
+        println("Application has finished with exit code %d" format code)
+        unregisterShutdownHook()
+      }
+    })
+    thread.start()
+    thread
+  }
 
   registerShutdownHook()
 
@@ -45,4 +62,7 @@ case class AppProcess(process: Process) {
   def unregisterShutdownHook() {
     JRuntime.getRuntime.removeShutdownHook(shutdownHook)
   }
+
+  def isRunning: Boolean =
+    finishState.isEmpty
 }
