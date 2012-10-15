@@ -26,7 +26,7 @@ CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.12")
 
 publishMavenStyle := false
 
-publishTo := Some(Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns))
+publishTo := Some(Resolver.url("sbt-plugin-releases repo", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns))
 
 ///////////////
 // ls-sbt
