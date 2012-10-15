@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cc.spray.revolver
+package spray.revolver
 
 import sbt._
 

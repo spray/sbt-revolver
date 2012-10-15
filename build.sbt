@@ -1,6 +1,6 @@
 name := "sbt-revolver"
 
-organization := "cc.spray"
+organization := "io.spray"
 
 version := "0.6.2-SNAPSHOT"
 
@@ -10,7 +10,7 @@ startYear := Some(2011)
 
 homepage := Some(url("http://github.com/spray/sbt-revolver"))
 
-organizationHomepage := Some(url("http://spray.cc"))
+organizationHomepage := Some(url("http://spray.io"))
 
 licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-revolver/raw/master/LICENSE")
 
@@ -23,8 +23,6 @@ CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.12")
 ///////////////
 // publishing
 ///////////////
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 publishMavenStyle := false
 

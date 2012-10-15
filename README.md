@@ -17,9 +17,9 @@ _sbt-revolver_ requires [SBT] 0.11.1 or greater.
 Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins.sbt`):
 
 ```scala
-resolvers += "spray repo" at "http://repo.spray.cc" // not needed for sbt >= 0.12
+resolvers += "spray repo" at "http://repo.spray.io" // not needed for sbt >= 0.12
 
-addSbtPlugin("cc.spray" % "sbt-revolver" % "0.6.1")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.6.1")
 ```
 
 and this to your `build.sbt`:
@@ -31,7 +31,7 @@ seq(Revolver.settings: _*)
 If you use SBTs full-configuration you need to
 
 ```scala
-import cc.spray.revolver.RevolverPlugin._
+import spray.revolver.RevolverPlugin._
 ```
 
 and then add the `Revolver.settings` to the (sub-)project containing the `main` object.
@@ -162,7 +162,7 @@ _sbt-revolver_ project under the project’s open source license.
   [SBT]: https://github.com/harrah/xsbt/wiki
   [JRebel]: http://zeroturnaround.com/jrebel/
   [xsbt-web-plugin]: https://github.com/siasia/xsbt-web-plugin/
-  [spray]: http://spray.cc
+  [spray]: http://spray.io
   [spray-can]: https://github.com/spray/spray-can
   [Shutdown Hook]: http://docs.oracle.com/javase/6/docs/api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
   [JRebel FAQ]: http://zeroturnaround.com/jrebel/faq/
