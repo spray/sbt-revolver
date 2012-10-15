@@ -1,3 +1,6 @@
 This is a maintenance release:
 
+- Group-ID changed from 'cc.spray' to 'io.spray'
+- Removed top-level 'cc' package for all classes. If you use sbt full configuration
+  you have to change your imports to 'import spray.revolver.RevolverPlugin._'
 - Fixed #9: re-status now reliably shows if the process is still running
