@@ -30,17 +30,19 @@ object RevolverPlugin extends Plugin {
       mainClass in reStart <<= mainClass in run in Compile,
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, state, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
+        (streams, state, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
           .map(restartApp)
           .updateState(registerAppProcess)
+          .map(_._2)
           .dependsOn(products in Compile)
       },
 
-      reStop <<= (streams, state)
+      reStop <<= (streams, state, thisProjectRef)
           .map(stopAppWithStreams)
-          .updateState(unregisterAppProcess),
+          .updateState(unregisterAppProcess)
+          .map(_._2),
 
-      reStatus <<= (streams, state) map showStatus,
+      reStatus <<= (streams, state, thisProjectRef) map showStatus,
 
       // default: no arguments to the app
       reStartArgs in Global := Seq.empty,
@@ -67,7 +69,7 @@ object RevolverPlugin extends Plugin {
 
       // stop a possibly running application if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload => state =>
-        if (state.has(appProcessKey)) stopApp(colorLogger(state), state)
+        if (state.has(appProcessKey)) stopApps(colorLogger(state), state)
         onUnload(state)
       }
     )
