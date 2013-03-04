@@ -40,7 +40,7 @@ object Actions {
   def startApp(streams: TaskStreams, state: State, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
                cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(state.get(appProcessKey).flatMap(_ get project).isEmpty)
-    colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format project.project)
+    colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project))
     AppProcess {
       forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, SysoutLogger, startConfig.jvmArgs)
     }
@@ -54,12 +54,12 @@ object Actions {
     state.get(appProcessKey).flatMap(_ get project) match {
       case Some(appProcess) =>
         if (appProcess.isRunning) {
-          log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format project.project)
+          log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format formatAppName(project.project))
 
           appProcess.stop()
         }
       case None =>
-        log.info("[YELLOW]Application %s not yet started" format project.project)
+        log.info("[YELLOW]Application %s not yet started" format formatAppName(project.project))
     }
   }
 
@@ -73,9 +73,9 @@ object Actions {
   def showStatus(streams: TaskStreams, state: State, project: ProjectRef) {
     colorLogger(streams.log).info {
       if (state.get(appProcessKey).flatMap(_ get project).exists(_.isRunning)) {
-        "[GREEN]Application %s is currently running" format project.project
+        "[GREEN]Application %s is currently running" format formatAppName(project.project, "[GREEN]")
       } else {
-        "[YELLOW]Application %s is currently NOT running" format project.project
+        "[YELLOW]Application %s is currently NOT running" format formatAppName(project.project)
       }
     }
   }
@@ -109,4 +109,7 @@ object Actions {
         ExtraCmdLineOptions(b.getOrElse(Nil), a)
     }
   }
+
+  def formatAppName(name: String, color: String = "[YELLOW]"): String =
+    "[RESET][BOLD]%s[RESET]%s" format (name, color)
 }

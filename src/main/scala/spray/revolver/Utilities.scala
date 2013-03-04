@@ -17,7 +17,7 @@
 package spray.revolver
 
 import sbt._
-import scala.Console.{RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE}
+import scala.Console._
 
 object Utilities {
 
@@ -37,6 +37,8 @@ object Utilities {
     def log(level: Level.Value, message: => String) {
       if (logger.ansiCodesSupported) {
         logger.log(level, message
+          .replace("[BOLD]", BOLD)
+          .replace("[RESET]", RESET)
           .replace("[RED]", RED)
           .replace("[GREEN]", GREEN)
           .replace("[YELLOW]", YELLOW)
@@ -46,6 +48,8 @@ object Utilities {
           .replace("[WHITE]", WHITE))
       } else {
         logger.log(level, message
+          .replace("[BOLD]", "")
+          .replace("[RESET]", "")
           .replace("[RED]", "")
           .replace("[GREEN]", "")
           .replace("[YELLOW]", "")
