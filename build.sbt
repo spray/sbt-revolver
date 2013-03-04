@@ -2,7 +2,7 @@ name := "sbt-revolver"
 
 organization := "io.spray"
 
-version := "0.6.2"
+version := "0.7.0-SNAPSHOT"
 
 description := "An SBT plugin for dangerously fast development turnaround in Scala"
 
