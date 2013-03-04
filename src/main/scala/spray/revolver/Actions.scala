@@ -23,50 +23,60 @@ import java.io.File
 object Actions {
   import Utilities._
 
-  val appProcessKey = AttributeKey[AppProcess]("app-process", "The currently running application process")
+  val appProcessKey = AttributeKey[Map[ProjectRef, AppProcess]]("app-process", "The currently running application processes")
 
-  def registerAppProcess(state: State, appProcess: AppProcess) =
-    state.put(appProcessKey, appProcess)
+  def registerAppProcess(state: State, appProcess: (ProjectRef, AppProcess)) =
+    state.put(appProcessKey, state.get(appProcessKey).getOrElse(Map.empty) + appProcess)
 
-  def unregisterAppProcess(state: State, dummy: Any) =
-    state.remove(appProcessKey)
+  def unregisterAppProcess(state: State, project: (ProjectRef, Any)) =
+    state.put(appProcessKey, state.get(appProcessKey).getOrElse(Map.empty) - project._1)
 
-  def restartApp(streams: TaskStreams, state: State, option: ForkScalaRun, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
-    stopAppWithStreams(streams, state)
-    startApp(streams, unregisterAppProcess(state, ()), option, mainClass, cp, args, startConfig)
+  def restartApp(streams: TaskStreams, state: State, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
+                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): (ProjectRef, AppProcess) = {
+    stopAppWithStreams(streams, state, project)
+    project -> startApp(streams, unregisterAppProcess(state, (project, ())), project, option, mainClass, cp, args, startConfig)
   }
 
-  def startApp(streams: TaskStreams, state: State, options: ForkScalaRun, mainClass: Option[String],
+  def startApp(streams: TaskStreams, state: State, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
                cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
-    assert(!state.has(appProcessKey))
-    colorLogger(streams.log).info("[YELLOW]Starting application in the background ...")
+    assert(state.get(appProcessKey).flatMap(_ get project).isEmpty)
+    colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format project.project)
     AppProcess {
       forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, SysoutLogger, startConfig.jvmArgs)
     }
   }
 
-  def stopAppWithStreams(streams: TaskStreams, state: State) {
-    stopApp(colorLogger(streams.log), state)
+  def stopAppWithStreams(streams: TaskStreams, state: State, project: ProjectRef) = {
+    project -> stopApp(colorLogger(streams.log), state, project)
   }
 
-  def stopApp(log: Logger, state: State) {
-    state.get(appProcessKey) match {
+  def stopApp(log: Logger, state: State, project: ProjectRef) {
+    state.get(appProcessKey).flatMap(_ get project) match {
       case Some(appProcess) =>
         if (appProcess.isRunning) {
-          log.info("[YELLOW]Stopping application (by killing the forked JVM) ...")
+          log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format project.project)
 
           appProcess.stop()
         }
       case None =>
-        log.info("[YELLOW]Application not yet started")
+        log.info("[YELLOW]Application %s not yet started" format project.project)
     }
   }
 
-  def showStatus(streams: TaskStreams, state: State) {
+  def stopApps(log: Logger, state: State) {
+    state.get(appProcessKey).toIterable.flatMap(_.keys).foreach {
+      project =>
+        stopApp(log, state, project)
+    }
+  }
+
+  def showStatus(streams: TaskStreams, state: State, project: ProjectRef) {
     colorLogger(streams.log).info {
-      if (state.get(appProcessKey).exists(_.isRunning)) "[GREEN]Application is currently running"
-      else "[YELLOW]Application is currently NOT running"
+      if (state.get(appProcessKey).flatMap(_ get project).exists(_.isRunning)) {
+        "[GREEN]Application %s is currently running" format project.project
+      } else {
+        "[YELLOW]Application %s is currently NOT running" format project.project
+      }
     }
   }
 
