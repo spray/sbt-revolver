@@ -50,9 +50,12 @@ object RevolverPlugin extends Plugin {
       // initialize with env variable
       reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
+      debugSettings in Global := None,
+
       // bake JRebel activation into java options for the forked JVM
-      SbtCompat.impl.changeJavaOptions { (jvmOptions, jrJar) =>
-        jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq
+      SbtCompat.impl.changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
+        jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
+          debug.map(_.toCmdLineArg).toSeq
       },
 
       // bundles the various parameters for forking
@@ -73,6 +76,9 @@ object RevolverPlugin extends Plugin {
         onUnload(state)
       }
     )
+
+    def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
+      debugSettings in reStart := Some(DebugSettings(port, suspend))
   }
 
 }

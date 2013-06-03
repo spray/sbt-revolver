@@ -35,4 +35,6 @@ trait RevolverKeys {
   val reJRebelJar = SettingKey[String]("re-jrebel-jar", "The path to the JRebel JAR. Automatically initialized to " +
     "value of the `JREBEL_PATH` environment variable.")
 
+  val debugSettings = SettingKey[Option[DebugSettings]]("debug-settings", "Settings for enabling remote JDWP debugging.")
+
 }

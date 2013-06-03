@@ -4,6 +4,6 @@ import sbt._
 import Keys._
 
 object SbtCompatImpl extends SbtCompat with RevolverKeys {
-  def changeJavaOptions(f: (Seq[String], String) => Seq[String]) =
-    javaOptions in reStart <<= (javaOptions, reJRebelJar) map f
+  def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[_] =
+    javaOptions in reStart <<= (javaOptions, reJRebelJar, extra) map f
 }

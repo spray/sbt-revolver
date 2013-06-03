@@ -129,7 +129,8 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 * `java-options(for re-start)`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
   when starting your application
 * `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
-
+* `debug-settings`, a `SettingKey[Option[DebugSettings]]` to specify remote debugger settings. There's a convenience
+  helper `Revolver.enableDebugging` to simplify to enable debugging (see examples).
 
 Examples:
 
@@ -144,6 +145,10 @@ To set a special main class for your app when started with `re-start`:
 To set fixed start arguments (than you can still append to with the `re-start` task):
 
     Revolver.reStartArgs := Seq("-x")
+
+To enable debugging with the specified options:
+
+    Revolver.enableDebugging(port = 5050, suspend = true)
 
 
 ## License
