@@ -26,7 +26,13 @@ CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.12")
 
 publishMavenStyle := false
 
-publishTo := Some(Resolver.url("sbt-plugin-releases repo", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns))
+publishTo <<= (version) { version: String =>
+   val base = new URL("http://scalasbt.artifactoryonline.com/scalasbt/")
+   val name  = if (version.contains("-SNAPSHOT")) "snapshots" else "releases"
+   Some(Resolver.url(name, new URL(base, "sbt-plugin-"+name))(Resolver.ivyStylePatterns))
+}
+
+credentials += Credentials(Path.userHome / ".ivy2" / "scalasbt.credentials")
 
 ///////////////
 // ls-sbt
