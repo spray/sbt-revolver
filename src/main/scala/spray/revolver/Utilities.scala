@@ -34,31 +34,37 @@ object Utilities {
   def colorLogger(logger: Logger): Logger = new Logger {
     def trace(t: => Throwable) { logger.trace(t) }
     def success(message: => String) { success(message) }
-    def log(level: Level.Value, message: => String) {
-      if (logger.ansiCodesSupported) {
-        logger.log(level, message
-          .replace("[BOLD]", BOLD)
-          .replace("[RESET]", RESET)
-          .replace("[RED]", RED)
-          .replace("[GREEN]", GREEN)
-          .replace("[YELLOW]", YELLOW)
-          .replace("[BLUE]", BLUE)
-          .replace("[MAGENTA]", MAGENTA)
-          .replace("[CYAN]", CYAN)
-          .replace("[WHITE]", WHITE))
-      } else {
-        logger.log(level, message
-          .replace("[BOLD]", "")
-          .replace("[RESET]", "")
-          .replace("[RED]", "")
-          .replace("[GREEN]", "")
-          .replace("[YELLOW]", "")
-          .replace("[BLUE]", "")
-          .replace("[MAGENTA]", "")
-          .replace("[CYAN]", "")
-          .replace("[WHITE]", ""))
-      }
-    }
+    def log(level: Level.Value, message: => String): Unit =
+      logger.log(level, colorize(logger.ansiCodesSupported, message))
   }
+  def colorize(ansiCodesSupported: Boolean, message: => String): String =
+    if (ansiCodesSupported)
+      message
+        .replace("[BOLD]", BOLD)
+        .replace("[RESET]", RESET)
+        .replace("[RED]", RED)
+        .replace("[GREEN]", GREEN)
+        .replace("[YELLOW]", YELLOW)
+        .replace("[BLUE]", BLUE)
+        .replace("[MAGENTA]", MAGENTA)
+        .replace("[CYAN]", CYAN)
+        .replace("[WHITE]", WHITE)
+    else
+      message
+        .replace("[BOLD]", "")
+        .replace("[RESET]", "")
+        .replace("[RED]", "")
+        .replace("[GREEN]", "")
+        .replace("[YELLOW]", "")
+        .replace("[BLUE]", "")
+        .replace("[MAGENTA]", "")
+        .replace("[CYAN]", "")
+        .replace("[WHITE]", "")
 
+  val colors = "BLUE MAGENTA CYAN RED GREEN".split(" ").map(_ formatted "[%s]")
+  private[this] var lastColorIdx = -1
+  def nextColor(): String = {
+    lastColorIdx = (lastColorIdx + 1) % colors.size
+    colors(lastColorIdx)
+  }
 }

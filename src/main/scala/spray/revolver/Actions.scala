@@ -40,9 +40,12 @@ object Actions {
   def startApp(streams: TaskStreams, state: State, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
                cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(state.get(appProcessKey).flatMap(_ get project).isEmpty)
-    colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project))
-    AppProcess {
-      forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, SysoutLogger, startConfig.jvmArgs)
+
+    val color = Utilities.nextColor()
+    val logger = new SysoutLogger(project.project, color, streams.log.ansiCodesSupported)
+    colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
+    AppProcess(project.project, color, logger) {
+      forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
     }
   }
 
@@ -54,12 +57,12 @@ object Actions {
     state.get(appProcessKey).flatMap(_ get project) match {
       case Some(appProcess) =>
         if (appProcess.isRunning) {
-          log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format formatAppName(project.project))
+          log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format formatApp(appProcess))
 
           appProcess.stop()
         }
       case None =>
-        log.info("[YELLOW]Application %s not yet started" format formatAppName(project.project))
+        log.info("[YELLOW]Application %s not yet started" format formatAppName(project.project, "[BOLD]"))
     }
   }
 
@@ -70,15 +73,15 @@ object Actions {
     }
   }
 
-  def showStatus(streams: TaskStreams, state: State, project: ProjectRef) {
+  def showStatus(streams: TaskStreams, state: State, project: ProjectRef): Unit =
     colorLogger(streams.log).info {
-      if (state.get(appProcessKey).flatMap(_ get project).exists(_.isRunning)) {
-        "[GREEN]Application %s is currently running" format formatAppName(project.project, "[GREEN]")
-      } else {
-        "[YELLOW]Application %s is currently NOT running" format formatAppName(project.project)
+      state.get(appProcessKey).flatMap(_ get project).find(_.isRunning) match {
+        case Some(appProcess) =>
+          "[GREEN]Application %s is currently running" format formatApp(appProcess, color = "[GREEN]")
+        case None =>
+          "[YELLOW]Application %s is currently NOT running" format formatAppName(project.project, "[BOLD]")
       }
     }
-  }
 
   def createJRebelAgentOption(log: Logger, path: String): Option[String] = {
     if (!path.trim.isEmpty) {
@@ -110,6 +113,8 @@ object Actions {
     }
   }
 
-  def formatAppName(name: String, color: String = "[YELLOW]"): String =
-    "[RESET][BOLD]%s[RESET]%s" format (name, color)
+  def formatApp(process: AppProcess, color: String = "[YELLOW]"): String =
+    formatAppName(process.projectName, process.consoleColor, color)
+  def formatAppName(projectName: String, projectColor: String, color: String = "[YELLOW]"): String =
+    "[RESET]%s%s[RESET]%s" format (projectColor, projectName, color)
 }

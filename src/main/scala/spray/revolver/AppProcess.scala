@@ -17,16 +17,16 @@
 package spray.revolver
 
 import java.lang.{Runtime => JRuntime}
-import sbt.Process
+import sbt.{Logger, Process}
 
 /**
  * A token which we put into the SBT state to hold the Process of an application running in the background.
  */
-case class AppProcess(process: Process) {
+case class AppProcess(projectName: String, consoleColor: String = Utilities.nextColor(), log: Logger)(process: Process) {
   val shutdownHook = new Thread(new Runnable {
     def run() {
       if (isRunning) {
-        println("Stopping the application that's still running in the background ...")
+        log.info("... killing ...")
         process.destroy()
       }
     }
@@ -39,7 +39,7 @@ case class AppProcess(process: Process) {
       def run() {
         val code = process.exitValue()
         finishState = Some(code)
-        println("Application has finished with exit code %d" format code)
+        log.info("... finished with exit code %d" format code)
         unregisterShutdownHook()
       }
     })

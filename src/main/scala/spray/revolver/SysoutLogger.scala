@@ -21,7 +21,7 @@ import sbt._
 /**
  * A logger which logs directly with println to be used in situations where no streams are available
  */
-object SysoutLogger extends Logger {
+class SysoutLogger(appName: String, color: String, ansiCodesSupported: Boolean = false) extends Logger {
 
   def trace(t: => Throwable) {
     t.printStackTrace()
@@ -29,15 +29,17 @@ object SysoutLogger extends Logger {
   }
 
   def success(message: => String) {
-    println("app success: " + message)
+    println(Utilities.colorize(ansiCodesSupported, "%s%s[RESET] success: " format (color, appName)) + message)
   }
 
   def log(level: Level.Value, message: => String) {
     val levelStr = level match {
-      case Level.Info => "app"
-      case Level.Error => "app[ERROR]"
+      case Level.Info => ""
+      case Level.Error => "[ERROR]"
       case x@_ => x.toString
     }
-    println(levelStr + ": " + message)
+    println(Utilities.colorize(ansiCodesSupported, "%s%s[RESET]%s " format (color, appName, levelStr)) + message)
   }
 }
+
+object SysoutLogger extends SysoutLogger("app", "[BOLD]", false)
