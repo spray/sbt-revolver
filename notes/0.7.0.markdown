@@ -1,5 +1,6 @@
-This release adds multi-module support and taps into the rainbow:
+This release adds multi-module support and taps into the rainbow.
 
-  * using `re-start` works separately for each process
-  * log output from different processes are color coded for better readability
+  * all tasks work separately for each project
+  * log output from different processes are color coded for better readability: ![Colorized example](https://github.com/spray/sbt-revolver/raw/c9d54000b045caff5913d1066049bcd74fb6cf86/notes/color-screenshot.png)
 
+Happy re-starting!
