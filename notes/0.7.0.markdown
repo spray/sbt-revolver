@@ -1,0 +1,5 @@
+This release adds multi-module support and taps into the rainbow:
+
+  * using `re-start` works separately for each process
+  * log output from different processes are color coded for better readability
+

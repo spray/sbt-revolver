@@ -19,7 +19,7 @@ Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins
 ```scala
 resolvers += "spray repo" at "http://repo.spray.io" // not needed for sbt >= 0.12
 
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.6.2")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.0")
 ```
 
 and this to your `build.sbt`:
