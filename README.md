@@ -150,6 +150,12 @@ To enable debugging with the specified options:
 
     Revolver.enableDebugging(port = 5050, suspend = true)
 
+## Known issues
+
+ * [#21](https://github.com/spray/sbt-revolver/issues/21): Project aggregation may lead to running processes being lost 
+   if one of the aggregated projects compilation fails while `re-start`ing. You may want to disable aggregation on your 
+   root project with `aggregate in reStart := false` until this bug is fixed.
+
 
 ## License
 
