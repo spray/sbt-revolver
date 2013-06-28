@@ -23,25 +23,35 @@ import java.io.File
 object Actions {
   import Utilities._
 
-  val appProcessKey = AttributeKey[Map[ProjectRef, AppProcess]]("app-process", "The currently running application processes")
+  val revolverStateKey = AttributeKey[RevolverState]("revolver-state", "Global state of sbt-revolver")
 
-  def registerAppProcess(state: State, appProcess: (ProjectRef, AppProcess)) =
-    state.put(appProcessKey, state.get(appProcessKey).getOrElse(Map.empty) + appProcess)
+  def updateState(state: State)(f: RevolverState => RevolverState): State =
+    state.put(revolverStateKey, f(revolverState(state)))
+  def updateStateAndGet[T](state: State)(f: RevolverState => (T, RevolverState)): (T, State) = {
+    val (value, newState) = f(revolverState(state))
+    (value, state.put(revolverStateKey, newState))
+  }
+
+  def revolverState(state: State): RevolverState = state.get(revolverStateKey).getOrElse(RevolverState.initial)
+
+  def registerAppProcess(state: State, info: (ProjectRef, AppProcess, State)) = info match {
+    case (project, process, newState) => updateState(newState)(_.addProcess(project, process))
+  }
 
   def unregisterAppProcess(state: State, project: (ProjectRef, Any)) =
-    state.put(appProcessKey, state.get(appProcessKey).getOrElse(Map.empty) - project._1)
+    updateState(state)(_.removeProcess(project._1))
 
   def restartApp(streams: TaskStreams, state: State, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): (ProjectRef, AppProcess) = {
+                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): (ProjectRef, AppProcess, State) = {
     stopAppWithStreams(streams, state, project)
-    project -> startApp(streams, unregisterAppProcess(state, (project, ())), project, option, mainClass, cp, args, startConfig)
+    val (color, newState) = updateStateAndGet(state)(_.grabColor)
+    (project, startApp(streams, unregisterAppProcess(state, (project, ())), project, option, mainClass, cp, args, startConfig, color), newState)
   }
 
   def startApp(streams: TaskStreams, state: State, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
-               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
-    assert(state.get(appProcessKey).flatMap(_ get project).isEmpty)
+               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, color: String): AppProcess = {
+    assert(!revolverState(state).getProcess(project).exists(_.isRunning))
 
-    val color = Utilities.nextColor()
     val logger = new SysoutLogger(project.project, color, streams.log.ansiCodesSupported)
     colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
     AppProcess(project.project, color, logger) {
@@ -54,7 +64,7 @@ object Actions {
   }
 
   def stopApp(log: Logger, state: State, project: ProjectRef) {
-    state.get(appProcessKey).flatMap(_ get project) match {
+    revolverState(state).getProcess(project) match {
       case Some(appProcess) =>
         if (appProcess.isRunning) {
           log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format formatApp(appProcess))
@@ -66,16 +76,12 @@ object Actions {
     }
   }
 
-  def stopApps(log: Logger, state: State) {
-    state.get(appProcessKey).toIterable.flatMap(_.keys).foreach {
-      project =>
-        stopApp(log, state, project)
-    }
-  }
+  def stopApps(log: Logger, state: State): Unit =
+    revolverState(state).runningProjects.foreach(stopApp(log, state, _))
 
   def showStatus(streams: TaskStreams, state: State, project: ProjectRef): Unit =
     colorLogger(streams.log).info {
-      state.get(appProcessKey).flatMap(_ get project).find(_.isRunning) match {
+      revolverState(state).getProcess(project).find(_.isRunning) match {
         case Some(appProcess) =>
           "[GREEN]Application %s is currently running" format formatApp(appProcess, color = "[GREEN]")
         case None =>

@@ -42,7 +42,7 @@ object Utilities {
       message
         .replace("[BOLD]", BOLD)
         .replace("[RESET]", RESET)
-        .replace("[RED]", RED)
+        .replace("[RED]", "\033[38;5;112mRED")
         .replace("[GREEN]", GREEN)
         .replace("[YELLOW]", YELLOW)
         .replace("[BLUE]", BLUE)
