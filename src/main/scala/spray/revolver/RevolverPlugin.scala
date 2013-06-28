@@ -72,7 +72,7 @@ object RevolverPlugin extends Plugin {
 
       // stop a possibly running application if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload => state =>
-        if (state.has(appProcessKey)) stopApps(colorLogger(state), state)
+        if (state.has(revolverStateKey)) stopApps(colorLogger(state), state)
         onUnload(state)
       }
     )
