@@ -150,6 +150,10 @@ To enable debugging with the specified options:
 
     Revolver.enableDebugging(port = 5050, suspend = true)
 
+To change set of colors used to tag output from multiple processes:
+
+    Revolver.reColors := Seq("blue", "green", "magenta")
+
 ## Known issues
 
  * [#21](https://github.com/spray/sbt-revolver/issues/21): Project aggregation may lead to running processes being lost 

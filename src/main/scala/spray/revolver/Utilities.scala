@@ -61,10 +61,9 @@ object Utilities {
         .replace("[CYAN]", "")
         .replace("[WHITE]", "")
 
-  val colors = "BLUE MAGENTA CYAN RED GREEN".split(" ").map(_ formatted "[%s]")
   private[this] var lastColorIdx = -1
-  def nextColor(): String = {
+  def nextColor(colors: Seq[String]): String = {
     lastColorIdx = (lastColorIdx + 1) % colors.size
-    colors(lastColorIdx)
+    colors(lastColorIdx).toUpperCase formatted "[%s]"
   }
 }
