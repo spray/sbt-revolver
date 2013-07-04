@@ -32,16 +32,16 @@ object Actions {
     state.put(appProcessKey, state.get(appProcessKey).getOrElse(Map.empty) - project._1)
 
   def restartApp(streams: TaskStreams, state: State, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): (ProjectRef, AppProcess) = {
+                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): (ProjectRef, AppProcess) = {
     stopAppWithStreams(streams, state, project)
-    project -> startApp(streams, unregisterAppProcess(state, (project, ())), project, option, mainClass, cp, args, startConfig)
+    project -> startApp(streams, unregisterAppProcess(state, (project, ())), project, option, mainClass, cp, args, startConfig, colors)
   }
 
   def startApp(streams: TaskStreams, state: State, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
-               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
+               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): AppProcess = {
     assert(state.get(appProcessKey).flatMap(_ get project).isEmpty)
 
-    val color = Utilities.nextColor()
+    val color = Utilities.nextColor(colors)
     val logger = new SysoutLogger(project.project, color, streams.log.ansiCodesSupported)
     colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
     AppProcess(project.project, color, logger) {
