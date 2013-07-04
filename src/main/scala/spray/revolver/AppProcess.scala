@@ -22,7 +22,7 @@ import sbt.{Logger, Process}
 /**
  * A token which we put into the SBT state to hold the Process of an application running in the background.
  */
-case class AppProcess(projectName: String, consoleColor: String = Utilities.nextColor(), log: Logger)(process: Process) {
+case class AppProcess(projectName: String, consoleColor: String, log: Logger)(process: Process) {
   val shutdownHook = new Thread(new Runnable {
     def run() {
       if (isRunning) {
