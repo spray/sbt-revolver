@@ -32,7 +32,7 @@ object RevolverPlugin extends Plugin {
       reColors in reStart := Seq("BLUE", "MAGENTA", "CYAN", "RED", "GREEN"),
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, state, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args, reColors)
+        (streams, state, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args, reColors in reStart)
           .map(restartApp)
           .updateState(registerAppProcess)
           .map(_._2)
