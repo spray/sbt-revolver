@@ -23,14 +23,17 @@ import sbt.{Logger, Process}
  * A token which we put into the SBT state to hold the Process of an application running in the background.
  */
 case class AppProcess(projectName: String, consoleColor: String, log: Logger)(process: Process) {
-  val shutdownHook = new Thread(new Runnable {
-    def run() {
-      if (isRunning) {
-        log.info("... killing ...")
-        process.destroy()
+  val shutdownHook = createShutdownHook("... killing ...")
+
+  def createShutdownHook(msg: => String) =
+    new Thread(new Runnable {
+      def run() {
+        if (isRunning) {
+          log.info(msg)
+          process.destroy()
+        }
       }
-    }
-  })
+    })
 
   @volatile var finishState: Option[Int] = None
 
