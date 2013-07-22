@@ -23,48 +23,32 @@ import java.io.File
 object Actions {
   import Utilities._
 
-  val revolverStateKey = AttributeKey[RevolverState]("revolver-state", "Global state of sbt-revolver")
-
-  def updateState(state: State)(f: RevolverState => RevolverState): State =
-    state.put(revolverStateKey, f(revolverState(state)))
-  def updateStateAndGet[T](state: State)(f: RevolverState => (T, RevolverState)): (T, State) = {
-    val (value, newState) = f(revolverState(state))
-    (value, state.put(revolverStateKey, newState))
+  def restartApp(streams: TaskStreams, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
+                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): AppProcess = {
+    stopAppWithStreams(streams, project)
+    startApp(streams, project, option, mainClass, cp, args, startConfig, colors)
   }
 
-  def revolverState(state: State): RevolverState = state.get(revolverStateKey).getOrElse(RevolverState.initial)
-
-  def registerAppProcess(state: State, info: (ProjectRef, AppProcess)) = info match {
-    case (project, process) => updateState(state)(_.addProcess(project, process))
-  }
-
-  def unregisterAppProcess(state: State, project: (ProjectRef, Any)) =
-    updateState(state)(_.removeProcess(project._1))
-
-  def restartApp(streams: TaskStreams, state: State, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): (ProjectRef, AppProcess) = {
-    stopAppWithStreams(streams, state, project)
-    project -> startApp(streams, unregisterAppProcess(state, (project, ())), project, option, mainClass, cp, args, startConfig, colors)
-  }
-
-  def startApp(streams: TaskStreams, state: State, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
+  def startApp(streams: TaskStreams, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
                cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): AppProcess = {
-    assert(!revolverState(state).getProcess(project).exists(_.isRunning))
+    assert(!revolverState.getProcess(project).exists(_.isRunning))
 
     val color = Utilities.nextColor(colors)
     val logger = new SysoutLogger(project.project, color, streams.log.ansiCodesSupported)
     colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
-    AppProcess(project.project, color, logger) {
-      forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
-    }
+
+    val appProcess=
+      AppProcess(project.project, color, logger) {
+        forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
+      }
+    registerAppProcess(project, appProcess)
+    appProcess
   }
 
-  def stopAppWithStreams(streams: TaskStreams, state: State, project: ProjectRef) = {
-    project -> stopApp(colorLogger(streams.log), state, project)
-  }
+  def stopAppWithStreams(streams: TaskStreams, project: ProjectRef) = stopApp(colorLogger(streams.log), project)
 
-  def stopApp(log: Logger, state: State, project: ProjectRef) {
-    revolverState(state).getProcess(project) match {
+  def stopApp(log: Logger, project: ProjectRef): Unit = {
+    revolverState.getProcess(project) match {
       case Some(appProcess) =>
         if (appProcess.isRunning) {
           log.info("[YELLOW]Stopping application %s (by killing the forked JVM) ..." format formatApp(appProcess))
@@ -76,12 +60,12 @@ object Actions {
     }
   }
 
-  def stopApps(log: Logger, state: State): Unit =
-    revolverState(state).runningProjects.foreach(stopApp(log, state, _))
+  def stopApps(log: Logger): Unit =
+    revolverState.runningProjects.foreach(stopApp(log, _))
 
-  def showStatus(streams: TaskStreams, state: State, project: ProjectRef): Unit =
+  def showStatus(streams: TaskStreams, project: ProjectRef): Unit =
     colorLogger(streams.log).info {
-      revolverState(state).getProcess(project).find(_.isRunning) match {
+      revolverState.getProcess(project).find(_.isRunning) match {
         case Some(appProcess) =>
           "[GREEN]Application %s is currently running" format formatApp(appProcess, color = "[GREEN]")
         case None =>
@@ -101,6 +85,24 @@ object Actions {
       } else Some("-javaagent:" + path)
     } else None
   }
+
+  def updateState(f: RevolverState => RevolverState): Unit = GlobalState.update(f)
+  def updateStateAndGet[T](f: RevolverState => (RevolverState, T)): T = GlobalState.updateAndGet(f)
+  def revolverState: RevolverState = GlobalState.get()
+
+  def registerAppProcess(project: ProjectRef, process: AppProcess) =
+    updateState { state =>
+      // before we overwrite the process entry we have to make sure the old
+      // project is really closed to avoid the unlikely (impossible?) race condition that we
+      // have started two processes in concurrently but only register the second one
+      val oldProcess = state.getProcess(project)
+      if (oldProcess.exists(_.isRunning)) oldProcess.get.stop()
+
+      state.addProcess(project, process)
+    }
+
+  def unregisterAppProcess(project: ProjectRef) =
+    updateState(_.removeProcess(project))
 
   case class ExtraCmdLineOptions(jvmArgs: Seq[String], startArgs: Seq[String])
 

@@ -32,19 +32,14 @@ object RevolverPlugin extends Plugin {
       reColors in reStart := Seq("BLUE", "MAGENTA", "CYAN", "RED", "GREEN"),
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, state, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args, reColors in reStart)
+        (streams, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args, reColors in reStart)
           .map(restartApp)
-          .updateState(registerAppProcess)
-          .map(_._2)
           .dependsOn(products in Compile)
       },
 
-      reStop <<= (streams, state, thisProjectRef)
-          .map(stopAppWithStreams)
-          .updateState(unregisterAppProcess)
-          .map(_._2),
+      reStop <<= (streams, thisProjectRef).map(stopAppWithStreams),
 
-      reStatus <<= (streams, state, thisProjectRef) map showStatus,
+      reStatus <<= (streams, thisProjectRef) map showStatus,
 
       // default: no arguments to the app
       reStartArgs in Global := Seq.empty,
@@ -74,7 +69,7 @@ object RevolverPlugin extends Plugin {
 
       // stop a possibly running application if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload => state =>
-        if (state.has(revolverStateKey)) stopApps(colorLogger(state), state)
+        stopApps(colorLogger(state))
         onUnload(state)
       }
     )
