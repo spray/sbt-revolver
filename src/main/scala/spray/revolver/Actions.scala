@@ -58,6 +58,7 @@ object Actions {
       case None =>
         log.info("[YELLOW]Application %s not yet started" format formatAppName(project.project, "[BOLD]"))
     }
+    unregisterAppProcess(project)
   }
 
   def stopApps(log: Logger): Unit =
