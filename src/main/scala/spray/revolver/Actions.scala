@@ -24,22 +24,24 @@ object Actions {
   import Utilities._
 
   def restartApp(streams: TaskStreams, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): AppProcess = {
+                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     stopAppWithStreams(streams, project)
-    startApp(streams, project, option, mainClass, cp, args, startConfig, colors)
+    startApp(streams, project, option, mainClass, cp, args, startConfig)
   }
 
   def startApp(streams: TaskStreams, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
-               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions, colors: Seq[String]): AppProcess = {
+               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(!revolverState.getProcess(project).exists(_.isRunning))
 
-    val color = Utilities.nextColor(colors)
+    // fail early
+    val theMainClass = mainClass.get
+    val color = updateStateAndGet(_.takeColor)
     val logger = new SysoutLogger(project.project, color, streams.log.ansiCodesSupported)
     colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
 
     val appProcess=
-      AppProcess(project.project, color, logger) {
-        forkRun(options, mainClass.get, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
+      AppProcess(project, color, logger) {
+        forkRun(options, theMainClass, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
       }
     registerAppProcess(project, appProcess)
     appProcess
@@ -95,15 +97,14 @@ object Actions {
     updateState { state =>
       // before we overwrite the process entry we have to make sure the old
       // project is really closed to avoid the unlikely (impossible?) race condition that we
-      // have started two processes in concurrently but only register the second one
+      // have started two processes concurrently but only register the second one
       val oldProcess = state.getProcess(project)
       if (oldProcess.exists(_.isRunning)) oldProcess.get.stop()
 
       state.addProcess(project, process)
     }
 
-  def unregisterAppProcess(project: ProjectRef) =
-    updateState(_.removeProcess(project))
+  def unregisterAppProcess(project: ProjectRef) = updateState(_.removeProcessAndColor(project))
 
   case class ExtraCmdLineOptions(jvmArgs: Seq[String], startArgs: Seq[String])
 

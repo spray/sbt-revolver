@@ -29,10 +29,10 @@ object RevolverPlugin extends Plugin {
 
       mainClass in reStart <<= mainClass in run in Compile,
 
-      reColors in reStart := Seq("BLUE", "MAGENTA", "CYAN", "RED", "GREEN"),
+      reColors in Global in reStart := basicColors,
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args, reColors in reStart)
+        (streams, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
           .map(restartApp)
           .dependsOn(products in Compile)
       },
@@ -71,11 +71,21 @@ object RevolverPlugin extends Plugin {
       onUnload in Global ~= { onUnload => state =>
         stopApps(colorLogger(state))
         onUnload(state)
+      },
+
+      onLoad in Global <<= (onLoad in Global, reColors in reStart) { (onLoad, colors) => state =>
+        val colorTags = colors.map(_.toUpperCase formatted "[%s]")
+        GlobalState.update(_.copy(colorPool = collection.immutable.Queue(colorTags: _*)))
+        onLoad(state)
       }
     )
 
     def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
       debugSettings in reStart := Some(DebugSettings(port, suspend))
+
+    def noColors: Seq[String] = Nil
+    def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "RED", "GREEN")
+    def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
   }
 
 }

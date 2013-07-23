@@ -1,0 +1,13 @@
+This release fixes [severe bug][#21] occurring with multi-module projects where sbt-revolver could easily lose
+track of started processes.
+
+Other changes:
+
+  * [#24][]: Make colors configurable. Thanks to [@rogach][] for this
+    contribution.
+  * [#25][]: Colors are never assigned twice as long as there are colors in the pool.
+
+[#21]: https://github.com/spray/sbt-revolver/issues/21
+[#24]: https://github.com/spray/sbt-revolver/issues/24
+[#25]: https://github.com/spray/sbt-revolver/issues/25
+[@rogach]: https://github.com/Rogach

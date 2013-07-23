@@ -130,6 +130,7 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
   when starting your application
 * `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
 * `re-colors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
+  There are some pre-defined color schemes.
 * `debug-settings`, a `SettingKey[Option[DebugSettings]]` to specify remote debugger settings. There's a convenience
   helper `Revolver.enableDebugging` to simplify to enable debugging (see examples).
 
@@ -155,12 +156,8 @@ To change set of colors used to tag output from multiple processes:
 
     Revolver.reColors := Seq("blue", "green", "magenta")
 
-## Known issues
-
- * [#21](https://github.com/spray/sbt-revolver/issues/21): Project aggregation may lead to running processes being lost 
-   if one of the aggregated projects compilation fails while `re-start`ing. You may want to disable aggregation on your 
-   root project with `aggregate in reStart := false` until this bug is fixed.
-
+There are predefined color schemes to use with `reColors`: `Revolver.NoColors`, `Revolver.basicColors`,
+`Revolver.basicColorsAndUnderlined`.
 
 ## License
 
