@@ -23,20 +23,20 @@ import java.io.File
 object Actions {
   import Utilities._
 
-  def restartApp(streams: TaskStreams, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
+  def restartApp(streams: TaskStreams, logTag: String, project: ProjectRef, option: ForkScalaRun, mainClass: Option[String],
                  cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     stopAppWithStreams(streams, project)
-    startApp(streams, project, option, mainClass, cp, args, startConfig)
+    startApp(streams, logTag, project, option, mainClass, cp, args, startConfig)
   }
 
-  def startApp(streams: TaskStreams, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
+  def startApp(streams: TaskStreams, logTag: String, project: ProjectRef, options: ForkScalaRun, mainClass: Option[String],
                cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(!revolverState.getProcess(project).exists(_.isRunning))
 
     // fail early
     val theMainClass = mainClass.get
     val color = updateStateAndGet(_.takeColor)
-    val logger = new SysoutLogger(project.project, color, streams.log.ansiCodesSupported)
+    val logger = new SysoutLogger(logTag, color, streams.log.ansiCodesSupported)
     colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
 
     val appProcess=

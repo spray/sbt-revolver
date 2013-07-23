@@ -32,7 +32,7 @@ object RevolverPlugin extends Plugin {
       reColors in Global in reStart := basicColors,
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
+        (streams, reLogTag, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
           .map(restartApp)
           .dependsOn(products in Compile)
       },
@@ -48,6 +48,8 @@ object RevolverPlugin extends Plugin {
       reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
       debugSettings in Global := None,
+
+      reLogTag in Global <<= thisProjectRef(_.project),
 
       // bake JRebel activation into java options for the forked JVM
       SbtCompat.impl.changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>

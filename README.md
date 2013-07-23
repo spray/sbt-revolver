@@ -131,6 +131,8 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 * `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
 * `re-colors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
   There are some pre-defined color schemes.
+* `re-log-tag`, a `SettingKey[String]`, which lets you change the log tag shown in front of log messages. Default is the
+  project name.
 * `debug-settings`, a `SettingKey[Option[DebugSettings]]` to specify remote debugger settings. There's a convenience
   helper `Revolver.enableDebugging` to simplify to enable debugging (see examples).
 

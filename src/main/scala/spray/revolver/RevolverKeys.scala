@@ -37,6 +37,8 @@ trait RevolverKeys {
 
   val reColors = SettingKey[Seq[String]]("re-colors", "Colors used for tagging output from different processes")
 
+  val reLogTag = SettingKey[String]("re-log-tag", "The tag used in front of log messages for this project")
+
   val debugSettings = SettingKey[Option[DebugSettings]]("debug-settings", "Settings for enabling remote JDWP debugging.")
 
 }

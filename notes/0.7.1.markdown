@@ -3,11 +3,12 @@ track of started processes.
 
 Other changes:
 
-  * [#24][]: Make colors configurable. Thanks to [@rogach][] for this
-    contribution.
+  * [#23][]: Customizable log tags to show in front of log messages (instead of project name).
+  * [#24][]: Make colors configurable. Thanks to [@rogach][] for this contribution.
   * [#25][]: Colors are never assigned twice as long as there are colors in the pool.
 
 [#21]: https://github.com/spray/sbt-revolver/issues/21
+[#23]: https://github.com/spray/sbt-revolver/issues/23
 [#24]: https://github.com/spray/sbt-revolver/issues/24
 [#25]: https://github.com/spray/sbt-revolver/issues/25
 [@rogach]: https://github.com/Rogach
