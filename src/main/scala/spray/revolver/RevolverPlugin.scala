@@ -59,15 +59,16 @@ object RevolverPlugin extends Plugin {
 
       // bundles the various parameters for forking
       reForkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory, javaOptions in reStart, outputStrategy,
-        javaHome) map { (tmp, si, base, jvmOptions, strategy, javaHomeDir) => ForkOptions(
-          scalaJars = si.jars,
-          javaHome = javaHomeDir,
-          connectInput = false,
-          outputStrategy = strategy,
+        javaHome) map ( (tmp, si, base, jvmOptions, strategy, javaHomeDir) =>
+        ForkOptions(
+          javaHomeDir,
+          strategy,
+          si.jars,
+          workingDirectory = Some(base),
           runJVMOptions = jvmOptions,
-          workingDirectory = Some(base)
+          connectInput = false
         )
-      },
+      ),
 
       // stop a possibly running application if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload => state =>
