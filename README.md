@@ -4,8 +4,6 @@ It sports the following features:
 
 * Starting and stopping your application in the background of your interactive SBT shell (in a forked JVM)
 * Triggered restart: automatically restart your application as soon as some of its sources have been changed
-* Hot reloading: automatically reload the respective classes into your running application as soon as some
-  of its sources have been changed, no restart necessary (requires [JRebel], which is free for Scala development)
 
 Even though _sbt-revolver_ works great with [spray] on [spray-can] there is nothing _spray_-specific to it. It can
 be used with any Scala application as long as there is some object with a `main` method.
@@ -36,27 +34,6 @@ import spray.revolver.RevolverPlugin._
 
 and then add the `Revolver.settings` to the (sub-)project containing the `main` object.
 
-#### JRebel
-
-In order to enable hot reloading you need get a licensed JRebel JAR onto your system.
-You can do this with these simple steps:
-
-1. Go to [this page](http://sales.zeroturnaround.com/) and apply for a free "JRebel for Scala" license
-   (in the "Get JRebel for free" box on the right).
-2. Wait for the email from ZeroTurnaround containing your personal `jrebel.lic` file.
-3. Create a `~/.jrebel` directory and copy the `jrebel.lic` file from the email into this directory.
-4. Download the JRebel _Generic JAR Installer_ from [this page](http://zeroturnaround.com/jrebel/current/) and run it.
-   When asked for the license let the installer check your `~/.jrebel` directory. Remember which path the JRebel JAR
-   was installed to.
-
-Once you have JRebel installed you need to let _sbt-revolver_ know where to find the `jrebel.jar`. You can do this
-either via the `Revolver.jRebelJar` setting directly in your SBT config or via a shell environment variable with the
-name `JREBEL_PATH` (which is the recommended way, since it doesn't pollute your SBT config with system-specific settings).
-For example, on OSX you would add the following line to your shell startup script:
-
-    export JREBEL_PATH=/Applications/ZeroTurnaround/JRebel/jrebel.jar
-
-
 ## Usage
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
@@ -81,8 +58,16 @@ When you press &lt;ENTER&gt; SBT leaves "triggered restart" and returns to the n
 
 #### Hot Reloading
 
-When you have [JRebel] installed and configured as described in the "Installation" section above _sbt-revolver_ supports
-hot reloading:
+*Note: JRebel support in sbt-revolver is not actively supported any more.*
+
+If you have JRebel installed you can let _sbt-revolver_ know where to find the `jrebel.jar`. You can do this
+either via the `Revolver.jRebelJar` setting directly in your SBT config or via a shell environment variable with the
+name `JREBEL_PATH` (which is the recommended way, since it doesn't pollute your SBT config with system-specific settings).
+For example, on OSX you would add the following line to your shell startup script:
+
+    export JREBEL_PATH=/Applications/ZeroTurnaround/JRebel/jrebel.jar
+
+With JRebel _sbt-revolver_ supports hot reloading:
 
 * Start your application with `re-start`.
 * Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
@@ -93,28 +78,6 @@ hot reloading:
 * If you changed your application in a way that requires a full restart (see below) press &lt;ENTER&gt; to leave
   triggered compilation and `re-start`.
 * Of course you always stop the application with `re-stop`.
-
-
-## Understanding JRebel
-
-JRebel is a JVM `-javaagent` plugin that extends the root classloaders with the ability to manage reloaded classes.
-When a change to a class file is detected on disk JRebel loads the changed class into your running application.
-This is great for quickly bringing code changes live but also comes with some restriction that you should understand in
-order to be able to use JRebel and _sbt-revolver_ effectively.
-
-When JRebel reloads a class `Foo` all the code of `Foo` is updated to the new version. However, all instances of `Foo`
-that already exist at the time of class reloading will remain alive in the JVMs heap. All fields of these objects
-will also remain unchanged. After reloading all methods called on `Foo` objects will be changed to their new
-implementations. If the new `Foo` class contains instance fields that were not present in the old `Foo` these instance
-fields will **not be initialized** for all old `Foo` instances! Also, if you change the way that `Foo` instances are
-initialized then this change will only apply to `Foo` instances created _after_ class reloading. All old instances that
-have been initialized by the old `Foo` will remain unchanged.
-
-The thing to remember when working with JRebel is that JRebel changes _code_, not data. All code running after
-class reloading will be the new code. Any code having run before class reloading will not be run again.
-
-More information about JRebel can be found in the [JRebel FAQ].
-
 
 ## Configuration
 
