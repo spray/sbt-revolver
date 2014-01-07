@@ -42,14 +42,14 @@ object RevolverPlugin extends Plugin {
       reStatus <<= (streams, thisProjectRef) map showStatus,
 
       // default: no arguments to the app
-      reStartArgs in Global := Seq.empty,
+      reStartArgs := Seq.empty,
 
       // initialize with env variable
-      reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
+      reJRebelJar := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
-      debugSettings in Global := None,
+      debugSettings := None,
 
-      reLogTag in Global <<= thisProjectRef(_.project),
+      reLogTag <<= thisProjectRef(_.project),
 
       // bake JRebel activation into java options for the forked JVM
       SbtCompat.impl.changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
