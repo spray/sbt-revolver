@@ -49,7 +49,7 @@ object RevolverPlugin extends Plugin {
 
       debugSettings in Global := None,
 
-      reLogTag in Global <<= thisProjectRef(_.project),
+      reLogTagUnscoped <<= thisProjectRef(_.project),
 
       // bake JRebel activation into java options for the forked JVM
       SbtCompat.impl.changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
