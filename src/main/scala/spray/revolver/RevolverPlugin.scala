@@ -29,10 +29,12 @@ object RevolverPlugin extends Plugin {
 
       mainClass in reStart <<= mainClass in run in Compile,
 
+      fullClasspath in reStart <<= fullClasspath in Runtime,
+
       reColors in Global in reStart := basicColors,
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, reLogTag, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in Runtime, reStartArgs, args)
+        (streams, reLogTag, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in reStart, reStartArgs, args)
           .map(restartApp)
           .dependsOn(products in Compile)
       },
