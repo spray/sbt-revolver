@@ -11,19 +11,17 @@ be used with any Scala application as long as there is some object with a `main`
 
 ## Installation
 
-_sbt-revolver_ requires [SBT] 0.11.1 or greater.
+_sbt-revolver_ requires [SBT] 0.11.3 or greater.
 Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins.sbt`):
 
 ```scala
-resolvers += "spray repo" at "http://repo.spray.io" // not needed for sbt >= 0.12
-
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.1")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2")
 ```
 
 and this to your `build.sbt`:
 
 ```scala
-seq(Revolver.settings: _*)
+Revolver.settings
 ```
 
 If you use SBTs full-configuration you need to
