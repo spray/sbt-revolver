@@ -60,7 +60,7 @@ object RevolverPlugin extends Plugin {
       },
 
       // bundles the various parameters for forking
-      reForkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory, javaOptions in reStart, outputStrategy,
+      reForkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory in reStart, javaOptions in reStart, outputStrategy,
         javaHome) map ( (tmp, si, base, jvmOptions, strategy, javaHomeDir) =>
         ForkOptions(
           javaHomeDir,
