@@ -1,0 +1,9 @@
+This is a maintenance release:
+
+   * [#30][]: Allow configuration of full classpath specially for re-start (use `fullClasspath in reStart`)
+   * [#31][]: Fix: Make sure `reLogTag` isn't applied globally in a multi-module project
+   * [#32][]: Allow configuration of base directory specially for re-start (use `baseDirectory in reStart`)
+
+ [#30]: https://github.com/spray/sbt-revolver/issues/30
+ [#31]: https://github.com/spray/sbt-revolver/issues/30
+ [#32]: https://github.com/spray/sbt-revolver/issues/30

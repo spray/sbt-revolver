@@ -85,12 +85,15 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 
 * `re-start-args`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
   application on every start. Any arguments given to the `re-start` task directly will be appended to this setting.
-* `re-main-class(for re-start)`, which lets you optionally define a main class to run in `re-start` independently of the
+* `re-start::re-main-class`, which lets you optionally define a main class to run in `re-start` independently of the
   one set for running the project normally. This value defaults to the value of `compile:main-class(for run)`. If you
   don't specify a value here explicitly the same logic as for the normal run main class applies: If only one main class
   is found it one is chosen. Otherwise, the main-class chooser is shown to the user.
-* `java-options(for re-start)`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
+* `re-start::java-options`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
   when starting your application
+* `re-start::base-directory`, a `SettingKey[File]`, which lets you customize the base directory independently from
+  what `run` assumes.
+* `re-start::full-classpath`, which lets you customize the full classpath path for running with `re-start`.
 * `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
 * `re-colors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
   There are some pre-defined color schemes, see the example section below.
