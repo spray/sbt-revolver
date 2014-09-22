@@ -89,7 +89,7 @@ object RevolverPlugin extends Plugin {
       debugSettings in reStart := Some(DebugSettings(port, suspend))
 
     def noColors: Seq[String] = Nil
-    def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "RED", "GREEN")
+    def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
     def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
   }
 
