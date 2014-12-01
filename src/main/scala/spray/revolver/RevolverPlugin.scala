@@ -60,12 +60,12 @@ object RevolverPlugin extends Plugin {
       },
 
       // bundles the various parameters for forking
-      reForkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory in reStart, javaOptions in reStart, outputStrategy,
-        javaHome) map ( (tmp, si, base, jvmOptions, strategy, javaHomeDir) =>
+      reForkOptions <<= (taskTemporaryDirectory, baseDirectory in reStart, javaOptions in reStart, outputStrategy,
+        javaHome) map ( (tmp, base, jvmOptions, strategy, javaHomeDir) =>
         ForkOptions(
           javaHomeDir,
           strategy,
-          si.jars,
+          Nil, // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
           workingDirectory = Some(base),
           runJVMOptions = jvmOptions,
           connectInput = false

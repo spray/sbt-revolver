@@ -15,6 +15,6 @@ object SbtCompatImpl extends SbtCompat with RevolverKeys {
         outputStrategy = Some(config.outputStrategy getOrElse LoggedOutput(log)),
         runJVMOptions = config.runJVMOptions ++ extraJvmArgs)
 
-    Fork.scala.fork(newOptions, scalaOptions)
+    Fork.java.fork(newOptions, scalaOptions)
   }
 }
