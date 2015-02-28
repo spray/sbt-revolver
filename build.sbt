@@ -18,10 +18,6 @@ sbtPlugin := true
 
 scalacOptions := Seq("-deprecation", "-encoding", "utf8")
 
-crossBuildingSettings
-
-CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.12", "0.13")
-
 ///////////////
 // publishing
 ///////////////

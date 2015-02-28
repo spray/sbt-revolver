@@ -18,14 +18,16 @@ package spray.revolver
 
 import sbt._
 import sbt.Keys._
+import Actions._
+import Utilities._
+object RevolverPlugin extends AutoPlugin {
 
-object RevolverPlugin extends Plugin {
+    object autoImport extends RevolverKeys {
+      val revolverSettings = RevolverPlugin.settings
+    }
+    import autoImport._
 
-  object Revolver extends RevolverKeys {
-    import Actions._
-    import Utilities._
-
-    lazy val settings = seq(
+    lazy val settings = Seq(
 
       mainClass in reStart <<= mainClass in run in Compile,
 
@@ -91,6 +93,8 @@ object RevolverPlugin extends Plugin {
     def noColors: Seq[String] = Nil
     def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
     def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
-  }
 
+    override def requires = sbt.plugins.JvmPlugin
+    override def trigger  = allRequirements
+    override def projectSettings = settings
 }

@@ -18,19 +18,7 @@ Add the following dependency to your `project/*.sbt` file (e.g. `project/plugins
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2")
 ```
 
-and this to your `build.sbt`:
-
-```scala
-Revolver.settings
-```
-
-If you use SBTs full-configuration you need to
-
-```scala
-import spray.revolver.RevolverPlugin._
-```
-
-and then add the `Revolver.settings` to the (sub-)project containing the `main` object.
+This is auto plugin, so you don't need any additional configuration in your build.sbt nor in Build.scala to make it work. For multi-module builds - you'll get it enabled for each module.
 
 ## Usage
 
@@ -42,7 +30,7 @@ _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configurat
   is first stopped before being restarted.
 
 * `re-stop` stops application.
-  This is done by simply force-killing the forked JVM. Note, that this means that [shutdown hooks] are not run (see 
+  This is done by simply force-killing the forked JVM. Note, that this means that [shutdown hooks] are not run (see
   [#20](http://github.com/spray/sbt-revolver/issues/20)).
 
 * `re-status` shows an informational message about the current running state of the application.
