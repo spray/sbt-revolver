@@ -23,13 +23,13 @@ import java.io.File
 object Actions {
   import Utilities._
 
-  def restartApp(streams: TaskStreams, logTag: String, project: ProjectRef, option: ForkOptions, mainClass: Option[String],
+  def restartApp(streams: TaskStreams, logTag: String, project: ProjectRef, fork: Fork, option: ForkOptions, mainClass: Option[String],
                  cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     stopAppWithStreams(streams, project)
-    startApp(streams, logTag, project, option, mainClass, cp, args, startConfig)
+    startApp(streams, logTag, project, fork, option, mainClass, cp, args, startConfig)
   }
 
-  def startApp(streams: TaskStreams, logTag: String, project: ProjectRef, options: ForkOptions, mainClass: Option[String],
+  def startApp(streams: TaskStreams, logTag: String, project: ProjectRef, fork: Fork, options: ForkOptions, mainClass: Option[String],
                cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(!revolverState.getProcess(project).exists(_.isRunning))
 
@@ -41,7 +41,7 @@ object Actions {
 
     val appProcess=
       AppProcess(project, color, logger) {
-        SbtCompat.impl.forkRun(options, theMainClass, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
+        SbtCompat.impl.forkRun(fork, options, theMainClass, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
       }
     registerAppProcess(project, appProcess)
     appProcess

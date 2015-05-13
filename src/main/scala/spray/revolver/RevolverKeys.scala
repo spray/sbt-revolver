@@ -30,6 +30,8 @@ trait RevolverKeys {
   val reStartArgs = SettingKey[Seq[String]]("re-start-args",
     "The arguments to be passed to the applications main method when being started")
 
+  val forkCommand = TaskKey[Fork]("fork command", "The fork implementation to use (Fork.scala or Fork.java)")
+
   val reForkOptions = TaskKey[ForkOptions]("re-fork-options", "The options needed for the start task for forking")
 
   val reJRebelJar = SettingKey[String]("re-jrebel-jar", "The path to the JRebel JAR. Automatically initialized to " +
