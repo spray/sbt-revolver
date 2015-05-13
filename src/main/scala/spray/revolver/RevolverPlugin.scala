@@ -34,7 +34,7 @@ object RevolverPlugin extends Plugin {
       reColors in Global in reStart := basicColors,
 
       reStart <<= InputTask(startArgsParser) { args =>
-        (streams, reLogTag, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in reStart, reStartArgs, args)
+        (streams, reLogTag, thisProjectRef, forkCommand, reForkOptions, mainClass in reStart, fullClasspath in reStart, reStartArgs, args)
           .map(restartApp)
           .dependsOn(products in Compile)
       },
@@ -58,6 +58,8 @@ object RevolverPlugin extends Plugin {
         jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
           debug.map(_.toCmdLineArg).toSeq
       },
+
+      forkCommand := Fork.scala,
 
       // bundles the various parameters for forking
       reForkOptions <<= (taskTemporaryDirectory, scalaInstance, baseDirectory in reStart, javaOptions in reStart, outputStrategy,
