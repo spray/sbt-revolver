@@ -23,6 +23,17 @@ import Utilities._
 object RevolverPlugin extends AutoPlugin {
 
     object autoImport extends RevolverKeys {
+      object Revolver {
+        def settings = RevolverPlugin.settings
+
+        def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
+          debugSettings in reStart := Some(DebugSettings(port, suspend))
+
+        def noColors: Seq[String] = Nil
+        def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
+        def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
+      }
+
       val revolverSettings = RevolverPlugin.settings
     }
     import autoImport._
@@ -33,7 +44,7 @@ object RevolverPlugin extends AutoPlugin {
 
       fullClasspath in reStart <<= fullClasspath in Runtime,
 
-      reColors in Global in reStart := basicColors,
+      reColors in Global in reStart := Revolver.basicColors,
 
       reStart <<= InputTask(startArgsParser) { args =>
         (streams, reLogTag, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in reStart, reStartArgs, args)
@@ -56,7 +67,7 @@ object RevolverPlugin extends AutoPlugin {
       reLogTagUnscoped <<= thisProjectRef(_.project),
 
       // bake JRebel activation into java options for the forked JVM
-      SbtCompat.impl.changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
+      changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
         jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
           debug.map(_.toCmdLineArg).toSeq
       },
@@ -87,14 +98,17 @@ object RevolverPlugin extends AutoPlugin {
       }
     )
 
-    def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
-      debugSettings in reStart := Some(DebugSettings(port, suspend))
-
-    def noColors: Seq[String] = Nil
-    def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
-    def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
-
     override def requires = sbt.plugins.JvmPlugin
     override def trigger  = allRequirements
     override def projectSettings = settings
+
+  /**
+   * Changes javaOptions by using transformer function
+   * (javaOptions, jrebelJarPath) => newJavaOptions
+   */
+  def changeJavaOptions(f: (Seq[String], String) => Seq[String]): Setting[_] =
+    changeJavaOptionsWithExtra(sbt.Keys.baseDirectory /* just an ignored dummy */)((jvmArgs, path, _) => f(jvmArgs, path))
+
+  def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[_] =
+    javaOptions in reStart <<= (javaOptions, reJRebelJar, extra) map f
 }

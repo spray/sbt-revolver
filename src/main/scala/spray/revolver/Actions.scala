@@ -41,7 +41,7 @@ object Actions {
 
     val appProcess=
       AppProcess(project, color, logger) {
-        SbtCompat.impl.forkRun(options, theMainClass, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
+        forkRun(options, theMainClass, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
       }
     registerAppProcess(project, appProcess)
     appProcess
@@ -127,4 +127,15 @@ object Actions {
     formatAppName(process.projectName, process.consoleColor, color)
   def formatAppName(projectName: String, projectColor: String, color: String = "[YELLOW]"): String =
     "[RESET]%s%s[RESET]%s" format (projectColor, projectName, color)
+
+  def forkRun(config: ForkOptions, mainClass: String, classpath: Seq[File], options: Seq[String], log: Logger, extraJvmArgs: Seq[String]): Process = {
+    log.info(options.mkString("Starting " + mainClass + ".main(", ", ", ")"))
+    val scalaOptions = "-classpath" :: Path.makeString(classpath) :: mainClass :: options.toList
+    val newOptions =
+      config.copy(
+        outputStrategy = Some(config.outputStrategy getOrElse LoggedOutput(log)),
+        runJVMOptions = config.runJVMOptions ++ extraJvmArgs)
+
+    Fork.scala.fork(newOptions, scalaOptions)
+  }
 }
