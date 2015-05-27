@@ -19,20 +19,6 @@ sbtPlugin := true
 scalacOptions := Seq("-deprecation", "-encoding", "utf8")
 
 ///////////////
-// publishing
-///////////////
-
-publishMavenStyle := false
-
-publishTo <<= (version) { version: String =>
-   val base = new URL("http://scalasbt.artifactoryonline.com/scalasbt/")
-   val name  = if (version.contains("-SNAPSHOT")) "snapshots" else "releases"
-   Some(Resolver.url(name, new URL(base, "sbt-plugin-"+name))(Resolver.ivyStylePatterns))
-}
-
-credentials += Credentials(Path.userHome / ".ivy2" / "scalasbt.credentials")
-
-///////////////
 // ls-sbt
 ///////////////
 
