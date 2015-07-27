@@ -1,5 +1,4 @@
 resolvers ++= Seq(
-  "less is" at "http://repo.lessis.me",
   "coda" at "http://repo.codahale.com",
   "staging" at "https://oss.sonatype.org/content/repositories/netvirtual-void-1005"
 )
