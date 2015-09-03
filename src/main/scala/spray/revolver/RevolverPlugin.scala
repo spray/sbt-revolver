@@ -25,7 +25,7 @@ object RevolverPlugin extends Plugin {
     import Actions._
     import Utilities._
 
-    lazy val settings = seq(
+    lazy val settings = Seq(
 
       mainClass in reStart <<= mainClass in run in Compile,
 
