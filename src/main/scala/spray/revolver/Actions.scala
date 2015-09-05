@@ -34,7 +34,7 @@ object Actions {
     assert(!revolverState.getProcess(project).exists(_.isRunning))
 
     // fail early
-    val theMainClass = mainClass.get
+    val theMainClass = mainClass.getOrElse(sys.error("No main class detected!"))
     val color = updateStateAndGet(_.takeColor)
     val logger = new SysoutLogger(logTag, color, streams.log.ansiCodesSupported)
     colorLogger(streams.log).info("[YELLOW]Starting application %s in the background ..." format formatAppName(project.project, color))
