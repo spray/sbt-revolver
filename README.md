@@ -23,7 +23,7 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.1")
 and this to your `build.sbt`:
 
 ```scala
-seq(Revolver.settings: _*)
+Revolver.settings
 ```
 
 If you use SBTs full-configuration you need to
