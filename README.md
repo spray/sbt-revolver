@@ -44,29 +44,6 @@ your source (or resource) files. If a change is detected SBT recompiles the requ
 automatically restarts your application.
 When you press &lt;ENTER&gt; SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
 
-#### Hot Reloading
-
-*Note: JRebel support in sbt-revolver is not actively supported any more.*
-
-If you have JRebel installed you can let _sbt-revolver_ know where to find the `jrebel.jar`. You can do this
-either via the `Revolver.jRebelJar` setting directly in your SBT config or via a shell environment variable with the
-name `JREBEL_PATH` (which is the recommended way, since it doesn't pollute your SBT config with system-specific settings).
-For example, on OSX you would add the following line to your shell startup script:
-
-    export JREBEL_PATH=/Applications/ZeroTurnaround/JRebel/jrebel.jar
-
-With JRebel _sbt-revolver_ supports hot reloading:
-
-* Start your application with `re-start`.
-* Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
-  If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
-  application. Since your application is not restarted the time required to bring changes online is minimal (see
-  the "Understanding JRebel" section below for more details). When you press &lt;ENTER&gt; SBT leaves triggered compilation
-  and returns to the normal prompt keeping your application running.
-* If you changed your application in a way that requires a full restart (see below) press &lt;ENTER&gt; to leave
-  triggered compilation and `re-start`.
-* Of course you always stop the application with `re-stop`.
-
 ## Configuration
 
 The following SBT settings defined by _sbt-revolver_ are of potential interest:
@@ -114,6 +91,29 @@ To change set of colors used to tag output from multiple processes:
 
 There are predefined color schemes to use with `reColors`: `Revolver.noColors`, `Revolver.basicColors`,
 `Revolver.basicColorsAndUnderlined`.
+
+#### Hot Reloading
+
+*Note: JRebel support in sbt-revolver is not actively supported any more.*
+
+If you have JRebel installed you can let _sbt-revolver_ know where to find the `jrebel.jar`. You can do this
+either via the `Revolver.jRebelJar` setting directly in your SBT config or via a shell environment variable with the
+name `JREBEL_PATH` (which is the recommended way, since it doesn't pollute your SBT config with system-specific settings).
+For example, on OSX you would add the following line to your shell startup script:
+
+    export JREBEL_PATH=/Applications/ZeroTurnaround/JRebel/jrebel.jar
+
+With JRebel _sbt-revolver_ supports hot reloading:
+
+* Start your application with `re-start`.
+* Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
+  If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
+  application. Since your application is not restarted the time required to bring changes online is minimal (see
+  the "Understanding JRebel" section below for more details). When you press &lt;ENTER&gt; SBT leaves triggered compilation
+  and returns to the normal prompt keeping your application running.
+* If you changed your application in a way that requires a full restart (see below) press &lt;ENTER&gt; to leave
+  triggered compilation and `re-start`.
+* Of course you always stop the application with `re-stop`.
 
 ## License
 
