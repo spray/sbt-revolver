@@ -1,0 +1,12 @@
+sbt-revolver 0.8.0 is now an AutoPlugin.
+
+Other changes:
+
+  - [#45][]: Added AutoPlugin support and dropped support for older sbt versions in the process, allowing some cleanup of the code. Thanks, [@alkersan][]!
+  - [#40][]: Removed RED color from list of colors. Thanks, [@jedesah](https://github.com/jedesah)!
+  - [#36][]: Fixed issue with JNI libraries by using Fork.java instead of Fork.scala. Thanks, [@kanterov](https://github.com/kanterov)!
+
+  [#36]: https://github.com/spray/sbt-revolver/issues/36
+  [#40]: https://github.com/spray/sbt-revolver/issues/40
+  [#45]: https://github.com/spray/sbt-revolver/issues/45
+  [@alkersan]: https://github.com/alkersan
