@@ -71,15 +71,15 @@ Examples:
 
 To configure a 2 GB memory limit for your app when started with `re-start`:
 
-    javaOptions in Revolver.reStart += "-Xmx2g"
+    javaOptions in reStart += "-Xmx2g"
 
 To set a special main class for your app when started with `re-start`:
 
-    mainClass in Revolver.reStart := Some("com.example.Main")
+    mainClass in reStart := Some("com.example.Main")
 
 To set fixed start arguments (than you can still append to with the `re-start` task):
 
-    Revolver.reStartArgs := Seq("-x")
+    reStartArgs := Seq("-x")
 
 To enable debugging with the specified options:
 
@@ -87,7 +87,7 @@ To enable debugging with the specified options:
 
 To change set of colors used to tag output from multiple processes:
 
-    Revolver.reColors := Seq("blue", "green", "magenta")
+    reColors := Seq("blue", "green", "magenta")
 
 There are predefined color schemes to use with `reColors`: `Revolver.noColors`, `Revolver.basicColors`,
 `Revolver.basicColorsAndUnderlined`.
