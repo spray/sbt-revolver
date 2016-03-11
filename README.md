@@ -1,6 +1,6 @@
 _sbt-revolver_ is a plugin for [SBT] enabling a super-fast development turnaround for your Scala applications.
 
-It sports the following features:
+It supports the following features:
 
 * Starting and stopping your application in the background of your interactive SBT shell (in a forked JVM)
 * Triggered restart: automatically restart your application as soon as some of its sources have been changed
