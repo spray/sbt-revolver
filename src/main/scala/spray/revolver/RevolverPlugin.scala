@@ -17,7 +17,8 @@
 package spray.revolver
 
 import sbt._
-import sbt.Keys._
+import Keys._
+import syntax._
 import Actions._
 import Utilities._
 object RevolverPlugin extends AutoPlugin {

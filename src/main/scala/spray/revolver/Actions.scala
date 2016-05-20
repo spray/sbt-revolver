@@ -19,6 +19,8 @@ package spray.revolver
 import sbt.Keys._
 import sbt._
 import java.io.File
+import sys.process.Process
+import sbt.compat.SbtCompat._
 
 object Actions {
   import Utilities._
