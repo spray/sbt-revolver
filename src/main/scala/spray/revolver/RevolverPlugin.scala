@@ -88,7 +88,8 @@ object RevolverPlugin extends AutoPlugin {
           Nil, // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
           workingDirectory = Some((baseDirectory in reStart).value),
           runJVMOptions = (javaOptions in reStart).value,
-          connectInput = false
+          connectInput = false,
+          envVars = (envVars in reStart).value
         )
       },
 
