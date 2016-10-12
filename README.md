@@ -33,7 +33,7 @@ _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configurat
 
 * `re-stop` stops application.
   This is done by simply force-killing the forked JVM. Note, that this means that [shutdown hooks] are not run (see
-  [#20](http://github.com/spray/sbt-revolver/issues/20)).
+  [#20](https://github.com/spray/sbt-revolver/issues/20)).
 
 * `re-status` shows an informational message about the current running state of the application.
 
@@ -129,10 +129,10 @@ _sbt-revolver_ project under the project’s open source license.
 
 
   [SBT]: https://github.com/harrah/xsbt/wiki
-  [JRebel]: http://zeroturnaround.com/jrebel/
-  [xsbt-web-plugin]: https://github.com/siasia/xsbt-web-plugin/
+  [JRebel]: http://zeroturnaround.com/software/jrebel/
+  [xsbt-web-plugin]: https://github.com/aolshevskiy/xsbt-web-plugin
   [spray]: http://spray.io
   [spray-can]: https://github.com/spray/spray-can
   [shutdown hooks]: http://docs.oracle.com/javase/6/docs/api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
-  [JRebel FAQ]: http://zeroturnaround.com/jrebel/faq/
+  [JRebel FAQ]: http://zeroturnaround.com/software/jrebel/learn/faq/
   [APL 2.0]: http://www.apache.org/licenses/LICENSE-2.0
