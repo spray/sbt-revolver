@@ -44,6 +44,8 @@ your source (or resource) files. If a change is detected SBT recompiles the requ
 automatically restarts your application.
 When you press &lt;ENTER&gt; SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
 
+To customize which files should be watched for triggered restart see the sbt documentation about [Triggered Execution](http://www.scala-sbt.org/0.13/docs/Triggered-Execution.html).
+
 ## Configuration
 
 The following SBT settings defined by _sbt-revolver_ are of potential interest:
