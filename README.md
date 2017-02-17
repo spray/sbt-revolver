@@ -18,7 +18,7 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0")
 ```
 
 sbt-revolver is an auto plugin, so you don't need any additional configuration in your build.sbt nor in Build.scala
-to make it work. In multi-module builds it will be enabled for each module.
+to make it work. In multi-module builds it will be enabled for each module. To disable sbt-revolver for some submodules use `Project(...).disablePlugins(RevolverPlugin)` in your build file.
 
 For older versions of sbt see version [0.7.2](https://github.com/spray/sbt-revolver/tree/571ca53a5a2d93764774bb87cd96dad0ad0547b3).
 
