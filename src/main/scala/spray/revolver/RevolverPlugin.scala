@@ -40,21 +40,28 @@ object RevolverPlugin extends AutoPlugin {
 
     lazy val settings = Seq(
 
-      mainClass in reStart <<= mainClass in run in Compile,
+      mainClass in reStart := (mainClass in run in Compile).value,
 
-      fullClasspath in reStart <<= fullClasspath in Runtime,
+      fullClasspath in reStart := (fullClasspath in Runtime).value,
 
       reColors in Global in reStart := Revolver.basicColors,
 
-      reStart <<= InputTask(startArgsParser) { args =>
-        (streams, reLogTag, thisProjectRef, reForkOptions, mainClass in reStart, fullClasspath in reStart, reStartArgs, args)
-          .map(restartApp)
-          .dependsOn(products in Compile)
-      },
+      reStart := Def.inputTask{
+        restartApp(
+          streams.value,
+          reLogTag.value,
+          thisProjectRef.value,
+          reForkOptions.value,
+          (mainClass in reStart).value,
+          (fullClasspath in reStart).value,
+          reStartArgs.value,
+          startArgsParser.parsed
+        )
+      }.dependsOn(products in Compile).evaluated,
 
-      reStop <<= (streams, thisProjectRef).map(stopAppWithStreams),
+      reStop := stopAppWithStreams(streams.value, thisProjectRef.value),
 
-      reStatus <<= (streams, thisProjectRef) map showStatus,
+      reStatus := showStatus(streams.value, thisProjectRef.value),
 
       // default: no arguments to the app
       reStartArgs in Global := Seq.empty,
@@ -64,7 +71,7 @@ object RevolverPlugin extends AutoPlugin {
 
       debugSettings in Global := None,
 
-      reLogTagUnscoped <<= thisProjectRef(_.project),
+      reLogTagUnscoped := thisProjectRef.value.project,
 
       // bake JRebel activation into java options for the forked JVM
       changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
@@ -73,17 +80,17 @@ object RevolverPlugin extends AutoPlugin {
       },
 
       // bundles the various parameters for forking
-      reForkOptions <<= (taskTemporaryDirectory, baseDirectory in reStart, javaOptions in reStart, outputStrategy,
-        javaHome) map ( (tmp, base, jvmOptions, strategy, javaHomeDir) =>
+      reForkOptions := {
+        taskTemporaryDirectory.value
         ForkOptions(
-          javaHomeDir,
-          strategy,
+          javaHome.value,
+          outputStrategy.value,
           Nil, // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
-          workingDirectory = Some(base),
-          runJVMOptions = jvmOptions,
+          workingDirectory = Some((baseDirectory in reStart).value),
+          runJVMOptions = (javaOptions in reStart).value,
           connectInput = false
         )
-      ),
+      },
 
       // stop a possibly running application if the project is reloaded and the state is reset
       onUnload in Global ~= { onUnload => state =>
@@ -91,10 +98,10 @@ object RevolverPlugin extends AutoPlugin {
         onUnload(state)
       },
 
-      onLoad in Global <<= (onLoad in Global, reColors in reStart) { (onLoad, colors) => state =>
-        val colorTags = colors.map(_.toUpperCase formatted "[%s]")
+      onLoad in Global := { state =>
+        val colorTags = (reColors in reStart).value.map(_.toUpperCase formatted "[%s]")
         GlobalState.update(_.copy(colorPool = collection.immutable.Queue(colorTags: _*)))
-        onLoad(state)
+        (onLoad in Global).value.apply(state)
       }
     )
 
@@ -110,5 +117,5 @@ object RevolverPlugin extends AutoPlugin {
     changeJavaOptionsWithExtra(sbt.Keys.baseDirectory /* just an ignored dummy */)((jvmArgs, path, _) => f(jvmArgs, path))
 
   def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[_] =
-    javaOptions in reStart <<= (javaOptions, reJRebelJar, extra) map f
+    javaOptions in reStart := f(javaOptions.value, reJRebelJar.value, extra.value)
 }

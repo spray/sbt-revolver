@@ -111,7 +111,7 @@ object Actions {
   import complete.Parsers._
   import complete.Parser._
   val spaceDelimitedWithoutDashes =
-          (token(Space) ~> (token(NotSpace, "<args>") - "---")).* <~ SpaceClass.*
+          (token(Space) ~> and(token(NotSpace, "<args>"), not("---", "Excluded."))).* <~ SpaceClass.*
   /*
    * A parser which parses additional options to the start task of the form
    * <arg1> <arg2> ... <argN> --- <jvmArg1> <jvmArg2> ... <jvmArgN>
