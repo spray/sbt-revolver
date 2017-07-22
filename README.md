@@ -62,6 +62,7 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
   what `run` assumes.
 * `re-start::full-classpath`, which lets you customize the full classpath path for running with `re-start`.
 * `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
+* `re-jrebel-agent`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_AGENT_PATH` env variable.
 * `re-colors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
   There are some pre-defined color schemes, see the example section below.
 * `re-log-tag`, a `SettingKey[String]`, which lets you change the log tag shown in front of log messages. Default is the
@@ -98,12 +99,16 @@ There are predefined color schemes to use with `reColors`: `Revolver.noColors`, 
 
 *Note: JRebel support in sbt-revolver is not actively supported any more.*
 
-If you have JRebel installed you can let _sbt-revolver_ know where to find the `jrebel.jar`. You can do this
-either via the `Revolver.jRebelJar` setting directly in your SBT config or via a shell environment variable with the
-name `JREBEL_PATH` (which is the recommended way, since it doesn't pollute your SBT config with system-specific settings).
+If you have JRebel installed you can let _sbt-revolver_ know where to find the `jrebel.jar` or the agent libraries. You can do this
+either via the `Revolver.jRebelJar`/`Revolver.jRebelAgent` setting directly in your SBT config or via a shell environment variable with the
+name `JREBEL_PATH` or `JREBEL_AGENT_PATH` (which is the recommended way, since it doesn't pollute your SBT config with system-specific settings).
 For example, on OSX you would add the following line to your shell startup script:
 
+    # if you want to use the older jrebel. jar
     export JREBEL_PATH=/Applications/ZeroTurnaround/JRebel/jrebel.jar
+
+    # or for newer JRebel versions
+    export JREBEL_AGENT_PATH=/Applications/ZeroTurnaround/JRebel/lib/libjrebel64.dylib
 
 With JRebel _sbt-revolver_ supports hot reloading:
 

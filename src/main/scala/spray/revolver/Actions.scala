@@ -76,16 +76,22 @@ object Actions {
       }
     }
 
-  def createJRebelAgentOption(log: Logger, path: String): Option[String] = {
-    if (!path.trim.isEmpty) {
-      val file = new File(path)
+  def createJRebelAgentOption(log: Logger, jarPath: String, agentPath: String): Option[String] = {
+    if (!agentPath.trim.isEmpty) {
+      val file = new File(agentPath)
+      if (!file.exists || !file.isFile) {
+        log.warn("jrebel.jar: " + jarPath + " not found")
+        None
+      } else Some("-agentpath:" + file.getAbsolutePath)
+    } else if (!jarPath.trim.isEmpty) {
+      val file = new File(jarPath)
       if (!file.exists || !file.isFile) {
         val file2 = new File(file, "jrebel.jar")
         if (!file2.exists || !file2.isFile) {
-          log.warn("jrebel.jar: " + path + " not found")
+          log.warn("jrebel.jar: " + jarPath + " not found")
           None
         } else Some("-javaagent:" + file2.getAbsolutePath)
-      } else Some("-javaagent:" + path)
+      } else Some("-javaagent:" + jarPath)
     } else None
   }
 

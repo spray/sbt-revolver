@@ -69,13 +69,15 @@ object RevolverPlugin extends AutoPlugin {
       // initialize with env variable
       reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
+      reJRebelAgent in Global := Option(System.getenv("JREBEL_AGENT_PATH")).getOrElse(""),
+
       debugSettings in Global := None,
 
       reLogTagUnscoped := thisProjectRef.value.project,
 
       // bake JRebel activation into java options for the forked JVM
-      changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
-        jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
+      changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, jrAgent, debug) =>
+        jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar, jrAgent).toSeq ++
           debug.map(_.toCmdLineArg).toSeq
       },
 
@@ -113,9 +115,9 @@ object RevolverPlugin extends AutoPlugin {
    * Changes javaOptions by using transformer function
    * (javaOptions, jrebelJarPath) => newJavaOptions
    */
-  def changeJavaOptions(f: (Seq[String], String) => Seq[String]): Setting[_] =
-    changeJavaOptionsWithExtra(sbt.Keys.baseDirectory /* just an ignored dummy */)((jvmArgs, path, _) => f(jvmArgs, path))
+  def changeJavaOptions(f: (Seq[String], String, String) => Seq[String]): Setting[_] =
+    changeJavaOptionsWithExtra(sbt.Keys.baseDirectory /* just an ignored dummy */)((jvmArgs, jarPath, agentPath, _) => f(jvmArgs, jarPath, agentPath))
 
-  def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[_] =
-    javaOptions in reStart := f(javaOptions.value, reJRebelJar.value, extra.value)
+  def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, String, T) => Seq[String]): Setting[_] =
+    javaOptions in reStart := f(javaOptions.value, reJRebelJar.value, reJRebelAgent.value, extra.value)
 }
