@@ -58,7 +58,7 @@ object Utilities {
     ("_"+color._1) -> (color._2+UNDERLINED)
   def delimited(before: String, after: String)(mapping: (String, String)): (String, String) =
     (before+mapping._1+after, mapping._2)
-  def rgb(idx: Int): (String, String) = ("RGB"+idx, "\033[38;5;"+idx+"m")
+  def rgb(idx: Int): (String, String) = ("RGB"+idx, "\u001b[38;5;"+idx+"m")
 
   def replaceAll(message: String, replacer: String => String) =
     ansiTagMapping.foldLeft(message)((msg, tag) => msg.replaceAll(java.util.regex.Pattern.quote(tag._1), replacer(tag._2)))
