@@ -83,13 +83,13 @@ object RevolverPlugin extends AutoPlugin {
       reForkOptions := {
         taskTemporaryDirectory.value
         ForkOptions(
-          javaHome.value,
-          outputStrategy.value,
-          Vector.empty[File], // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
-          Option((baseDirectory in reStart).value),
-          (javaOptions in reStart).value.toVector,
-          false,
-          Map.empty[String, String]
+          javaHome = javaHome.value,
+          outputStrategy = outputStrategy.value,
+          bootJars = Vector.empty[File], // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
+          workingDirectory = Option((baseDirectory in reStart).value),
+          runJVMOptions = (javaOptions in reStart).value.toVector,
+          connectInput = false,
+          envVars = (envVars in reStart).value
         )
       },
 
