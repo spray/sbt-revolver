@@ -14,7 +14,7 @@ be used with any Scala application as long as there is some object with a `main`
 _sbt-revolver_ requires [SBT] 0.13.x or greater. Add the following dependency to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.0")
 ```
 
 sbt-revolver is an auto plugin, so you don't need any additional configuration in your build.sbt nor in Build.scala
@@ -26,20 +26,20 @@ For older versions of sbt see version [0.7.2](https://github.com/spray/sbt-revol
 
 _sbt-revolver_ defines three new commands (SBT tasks) in its own `re` configuration:
 
-* `re-start <args> --- <jvmArgs>` starts your application in a forked JVM.
-  The optionally specified (JVM) arguments are appended to the ones configured via the `re-start-args`/
-  `java-options(for re-start)` setting (see the "Configuration" section below). If the application is already running it
+* `reStart <args> --- <jvmArgs>` starts your application in a forked JVM.
+  The optionally specified (JVM) arguments are appended to the ones configured via the `reStartArgs`/
+  `reStart::javaOptions` setting (see the "Configuration" section below). If the application is already running it
   is first stopped before being restarted.
 
-* `re-stop` stops application.
+* `reStop` stops application.
   This is done by simply force-killing the forked JVM. Note, that this means that [shutdown hooks] are not run (see
   [#20](https://github.com/spray/sbt-revolver/issues/20)).
 
-* `re-status` shows an informational message about the current running state of the application.
+* `reStatus` shows an informational message about the current running state of the application.
 
 #### Triggered Restart
 
-You can use `~re-start` to go into "triggered restart" mode. Your application starts up and SBT watches for changes in
+You can use `~reStart` to go into "triggered restart" mode. Your application starts up and SBT watches for changes in
 your source (or resource) files. If a change is detected SBT recompiles the required classes and _sbt-revolver_
 automatically restarts your application.
 When you press &lt;ENTER&gt; SBT leaves "triggered restart" and returns to the normal prompt keeping your application running.
@@ -50,37 +50,38 @@ To customize which files should be watched for triggered restart see the sbt doc
 
 The following SBT settings defined by _sbt-revolver_ are of potential interest:
 
-* `re-start-args`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
-  application on every start. Any arguments given to the `re-start` task directly will be appended to this setting.
-* `re-start::main-class`, which lets you optionally define a main class to run in `re-start` independently of the
-  one set for running the project normally. This value defaults to the value of `compile:main-class(for run)`. If you
+* `reStartArgs`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
+  application on every start. Any arguments given to the `reStart` task directly will be appended to this setting.
+* `reStart::mainClass`, which lets you optionally define a main class to run in `reStart` independently of the
+  one set for running the project normally. This value defaults to the value of `compile:run::mainClass`. If you
   don't specify a value here explicitly the same logic as for the normal run main class applies: If only one main class
   is found it one is chosen. Otherwise, the main-class chooser is shown to the user.
-* `re-start::java-options`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
+* `reStart::javaOptions`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
   when starting your application
-* `re-start::base-directory`, a `SettingKey[File]`, which lets you customize the base directory independently from
+* `reStart::baseDirectory`, a `SettingKey[File]`, which lets you customize the base directory independently from
   what `run` assumes.
-* `re-start::full-classpath`, which lets you customize the full classpath path for running with `re-start`.
-* `re-jrebel-jar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
-* `re-jrebel-agent`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_AGENT_PATH` env variable.
-* `re-colors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
+* `reStart::fullClasspath`, which lets you customize the full classpath path for running with `reStart`.
+* `reStart::envVars`, which lets you customize the environment variables for running the application.
+* `reJrebelJar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
+* `reJrebelAgent`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_AGENT_PATH` env variable.
+* `reColors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
   There are some pre-defined color schemes, see the example section below.
-* `re-log-tag`, a `SettingKey[String]`, which lets you change the log tag shown in front of log messages. Default is the
+* `reLogTag`, a `SettingKey[String]`, which lets you change the log tag shown in front of log messages. Default is the
   project name.
-* `debug-settings`, a `SettingKey[Option[DebugSettings]]` to specify remote debugger settings. There's a convenience
+* `debugSettings`, a `SettingKey[Option[DebugSettings]]` to specify remote debugger settings. There's a convenience
   helper `Revolver.enableDebugging` to simplify to enable debugging (see examples).
 
 Examples:
 
-To configure a 2 GB memory limit for your app when started with `re-start`:
+To configure a 2 GB memory limit for your app when started with `reStart`:
 
     javaOptions in reStart += "-Xmx2g"
 
-To set a special main class for your app when started with `re-start`:
+To set a special main class for your app when started with `reStart`:
 
     mainClass in reStart := Some("com.example.Main")
 
-To set fixed start arguments (than you can still append to with the `re-start` task):
+To set fixed start arguments (than you can still append to with the `reStart` task):
 
     reStartArgs := Seq("-x")
 
@@ -94,6 +95,10 @@ To change set of colors used to tag output from multiple processes:
 
 There are predefined color schemes to use with `reColors`: `Revolver.noColors`, `Revolver.basicColors`,
 `Revolver.basicColorsAndUnderlined`.
+
+To add environment variables when running the application:
+
+    envVars in reStart := Map("USER_TOKEN" -> "2359298356239")
 
 #### Hot Reloading
 
@@ -112,15 +117,15 @@ For example, on OSX you would add the following line to your shell startup scrip
 
 With JRebel _sbt-revolver_ supports hot reloading:
 
-* Start your application with `re-start`.
+* Start your application with `reStart`.
 * Enter "triggered compilation" with `~products`. SBT watches for changes in your source (and resource) files.
   If a change is detected SBT recompiles the required classes and JRebel loads these classes right into your running
   application. Since your application is not restarted the time required to bring changes online is minimal (see
   the "Understanding JRebel" section below for more details). When you press &lt;ENTER&gt; SBT leaves triggered compilation
   and returns to the normal prompt keeping your application running.
 * If you changed your application in a way that requires a full restart (see below) press &lt;ENTER&gt; to leave
-  triggered compilation and `re-start`.
-* Of course you always stop the application with `re-stop`.
+  triggered compilation and `reStart`.
+* Of course you always stop the application with `reStop`.
 
 ## License
 
