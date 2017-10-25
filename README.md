@@ -14,7 +14,7 @@ be used with any Scala application as long as there is some object with a `main`
 _sbt-revolver_ requires [SBT] 0.13.x or greater. Add the following dependency to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.0")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 ```
 
 sbt-revolver is an auto plugin, so you don't need any additional configuration in your build.sbt nor in Build.scala
