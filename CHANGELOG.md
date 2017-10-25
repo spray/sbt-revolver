@@ -1,3 +1,5 @@
+## Version 0.9.2 (unreleased)
+
 ## Version 0.9.1 (2017-10-25)
  * [#79](https://github.com/spray/sbt-revolver/issues/79): 0.9.0 contained some old class files that lead to 
    compatibility problems in combination with other plugins. 0.9.1 was cleanly rebuilt from the same sources 
