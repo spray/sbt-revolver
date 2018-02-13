@@ -35,6 +35,9 @@ trait RevolverKeys {
   val reJRebelJar = SettingKey[String]("re-jrebel-jar", "The path to the JRebel JAR. Automatically initialized to " +
     "value of the `JREBEL_PATH` environment variable.")
 
+  val reJRebelAgent = SettingKey[String]("re-jrebel-agent", "The path to the JRebel agent lib. Automatically initialized to " +
+    "value of the `JREBEL_AGENT_PATH` environment variable.")
+
   val reColors = SettingKey[Seq[String]]("re-colors", "Colors used for tagging output from different processes")
 
   // we need this strange setup to make sure we can define a project specific default
