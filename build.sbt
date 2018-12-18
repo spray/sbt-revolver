@@ -2,7 +2,7 @@ sbtPlugin := true
 
 scalacOptions := Seq("-deprecation", "-encoding", "utf8")
 
-crossSbtVersions := Vector("0.13.17", "1.1.0")
+crossSbtVersions := Vector("0.13.18", "1.2.7")
 
 // Scripted test options.
 
