@@ -29,6 +29,9 @@ object RevolverPlugin extends AutoPlugin {
         def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
           debugSettings in reStart := Some(DebugSettings(port, suspend))
 
+        def disableDebugging =
+          debugSettings in reStart := None
+
         def noColors: Seq[String] = Nil
         def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
         def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
