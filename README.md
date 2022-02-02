@@ -52,16 +52,16 @@ The following SBT settings defined by _sbt-revolver_ are of potential interest:
 
 * `reStartArgs`, a `SettingKey[Seq[String]]`, which lets you define arguments that _sbt-revolver_ should pass to your
   application on every start. Any arguments given to the `reStart` task directly will be appended to this setting.
-* `reStart::mainClass`, which lets you optionally define a main class to run in `reStart` independently of the
+* `reStart / mainClass`, which lets you optionally define a main class to run in `reStart` independently of the
   one set for running the project normally. This value defaults to the value of `compile:run::mainClass`. If you
   don't specify a value here explicitly the same logic as for the normal run main class applies: If only one main class
   is found it one is chosen. Otherwise, the main-class chooser is shown to the user.
-* `reStart::javaOptions`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
+* `reStart / javaOptions`, a `SettingKey[Seq[String]]`, which lets you define the options to pass to the forked JVM
   when starting your application
-* `reStart::baseDirectory`, a `SettingKey[File]`, which lets you customize the base directory independently from
+* `reStart / baseDirectory`, a `SettingKey[File]`, which lets you customize the base directory independently from
   what `run` assumes.
-* `reStart::fullClasspath`, which lets you customize the full classpath path for running with `reStart`.
-* `reStart::envVars`, which lets you customize the environment variables for running the application.
+* `reStart / fullClasspath`, which lets you customize the full classpath path for running with `reStart`.
+* `reStart / envVars`, which lets you customize the environment variables for running the application.
 * `reJrebelJar`, a `SettingKey[String]`, which lets you override the value of the `JREBEL_PATH` env variable.
 * `reColors`, a `SettingKey[Seq[String]]`, which lets you change colors used to tag output from running processes.
   There are some pre-defined color schemes, see the example section below.
@@ -74,11 +74,11 @@ Examples:
 
 To configure a 2 GB memory limit for your app when started with `reStart`:
 
-    javaOptions in reStart += "-Xmx2g"
+    reStart / javaOptions += "-Xmx2g"
 
 To set a special main class for your app when started with `reStart`:
 
-    mainClass in reStart := Some("com.example.Main")
+    reStart / mainClass := Some("com.example.Main")
 
 To set fixed start arguments (than you can still append to with the `reStart` task):
 
@@ -97,7 +97,7 @@ There are predefined color schemes to use with `reColors`: `Revolver.noColors`, 
 
 To add environment variables when running the application:
 
-    envVars in reStart := Map("USER_TOKEN" -> "2359298356239")
+    reStart / envVars := Map("USER_TOKEN" -> "2359298356239")
 
 #### Hot Reloading
 
