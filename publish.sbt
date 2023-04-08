@@ -14,8 +14,4 @@ organizationHomepage := Some(url("http://spray.io"))
 
 licenses in GlobalScope += "Apache License 2.0" -> url("https://github.com/spray/sbt-revolver/raw/master/LICENSE")
 
-publishMavenStyle := false
-
-bintrayRepository := "sbt-plugins"
-
-bintrayOrganization := None
+publishMavenStyle := true
