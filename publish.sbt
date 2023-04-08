@@ -30,3 +30,11 @@ scmInfo := Some(
     connection = "scm:git:git@github.com:spray/sbt-revolver.git"
   )
 )
+
+developers := List(
+  Developer(
+    "sbt-revolver-contributors",
+    "Sbt Revolver Contributors",
+    "",
+    url("https://github.com/spray/sbt-revolver/graphs/contributors"))
+)
