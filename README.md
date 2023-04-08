@@ -88,6 +88,10 @@ To enable debugging with the specified options:
 
     Revolver.enableDebugging(port = 5050, suspend = true)
 
+To disable debugging:
+
+    Revolver.disableDebugging
+
 To change set of colors used to tag output from multiple processes:
 
     reColors := Seq("blue", "green", "magenta")
