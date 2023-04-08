@@ -19,7 +19,7 @@ package spray.revolver
 import sbt.Keys._
 import sbt.{Fork, ForkOptions, LoggedOutput, Logger, Path, ProjectRef, State, complete}
 import java.io.File
-import SbtCompat._
+import scala.sys.process.Process
 
 object Actions {
   import Utilities._

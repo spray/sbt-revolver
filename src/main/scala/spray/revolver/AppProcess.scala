@@ -17,8 +17,9 @@
 package spray.revolver
 
 import java.lang.{Runtime => JRuntime}
-import sbt.{ProjectRef, Logger}
-import SbtCompat._
+import sbt.{Logger, ProjectRef}
+
+import scala.sys.process.Process
 
 /**
  * A token which we put into the SBT state to hold the Process of an application running in the background.
