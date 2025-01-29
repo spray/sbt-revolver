@@ -19,7 +19,7 @@ package spray.revolver
 import sbt.Keys._
 import sbt.{Fork, ForkOptions, LoggedOutput, Logger, Path, ProjectRef, State, complete}
 import java.io.File
-import scala.sys.process.Process
+import scala.sys.process.ProcessWithPid
 
 object Actions {
   import Utilities._
@@ -129,13 +129,13 @@ object Actions {
   def formatAppName(projectName: String, projectColor: String, color: String = "[YELLOW]"): String =
     "[RESET]%s%s[RESET]%s" format (projectColor, projectName, color)
 
-  def forkRun(config: ForkOptions, mainClass: String, classpath: Seq[File], options: Seq[String], log: Logger, extraJvmArgs: Seq[String]): Process = {
+  def forkRun(config: ForkOptions, mainClass: String, classpath: Seq[File], options: Seq[String], log: Logger, extraJvmArgs: Seq[String]): ProcessWithPid = {
     log.info(options.mkString("Starting " + mainClass + ".main(", ", ", ")"))
     val scalaOptions = "-classpath" :: Path.makeString(classpath) :: mainClass :: options.toList
     val newOptions = config
       .withOutputStrategy(config.outputStrategy getOrElse LoggedOutput(log))
       .withRunJVMOptions(config.runJVMOptions ++ extraJvmArgs)
 
-    Fork.java.fork(newOptions, scalaOptions)
+    ProcessWithPid(Fork.java.fork(newOptions, scalaOptions), log)
   }
 }
