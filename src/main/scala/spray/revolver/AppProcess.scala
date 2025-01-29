@@ -17,22 +17,38 @@
 package spray.revolver
 
 import java.lang.{Runtime => JRuntime}
+import java.util.concurrent.TimeUnit
 import sbt.{Logger, ProjectRef}
 
-import scala.sys.process.Process
+import scala.sys.process.ProcessWithPid
 
 /**
  * A token which we put into the SBT state to hold the Process of an application running in the background.
  */
-case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)(process: Process) {
+case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)(process: ProcessWithPid) {
   val shutdownHook = createShutdownHook("... killing ...")
+
+  private def destroyProcess(): Unit = process.process.destroy()
+
+  private def killProcess(pid: Long): Unit = {
+    val exited = try {
+      JRuntime.getRuntime.exec(s"kill -15 $pid").waitFor(10, TimeUnit.SECONDS)
+    } catch { case e: InterruptedException => true }
+
+    if (!exited) destroyProcess()
+  }
+
+  private def stopProcess(): Int = {
+    process.pid.fold(destroyProcess())(killProcess)
+    process.process.exitValue()
+  }
 
   def createShutdownHook(msg: => String) =
     new Thread(new Runnable {
       def run() {
         if (isRunning) {
           log.info(msg)
-          process.destroy()
+          stopProcess()
         }
       }
     })
@@ -42,7 +58,7 @@ case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)
   val watchThread = {
     val thread = new Thread(new Runnable {
       def run() {
-        val code = process.exitValue()
+        val code = process.process.exitValue()
         finishState = Some(code)
         log.info("... finished with exit code %d" format code)
         unregisterShutdownHook()
@@ -58,8 +74,7 @@ case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)
 
   def stop() {
     unregisterShutdownHook()
-    process.destroy()
-    process.exitValue()
+    stopProcess()
   }
 
   def registerShutdownHook() {
