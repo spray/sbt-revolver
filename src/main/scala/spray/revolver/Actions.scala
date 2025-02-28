@@ -25,13 +25,13 @@ object Actions {
   import Utilities._
 
   def restartApp(streams: TaskStreams, logTag: String, project: ProjectRef, option: ForkOptions, mainClass: Option[String],
-                 cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
+                 cp: Seq[File], args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     stopAppWithStreams(streams, project)
     startApp(streams, logTag, project, option, mainClass, cp, args, startConfig)
   }
 
   def startApp(streams: TaskStreams, logTag: String, project: ProjectRef, options: ForkOptions, mainClass: Option[String],
-               cp: Classpath, args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
+               cp: Seq[File], args: Seq[String], startConfig: ExtraCmdLineOptions): AppProcess = {
     assert(!revolverState.getProcess(project).exists(_.isRunning))
 
     // fail early
@@ -42,7 +42,7 @@ object Actions {
 
     val appProcess=
       AppProcess(project, color, logger) {
-        forkRun(options, theMainClass, cp.map(_.data), args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
+        forkRun(options, theMainClass, cp, args ++ startConfig.startArgs, logger, startConfig.jvmArgs)
       }
     registerAppProcess(project, appProcess)
     appProcess

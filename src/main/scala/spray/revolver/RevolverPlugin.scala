@@ -20,7 +20,7 @@ import sbt._
 import sbt.Keys._
 import Actions._
 import Utilities._
-object RevolverPlugin extends AutoPlugin {
+object RevolverPlugin extends AutoPlugin with RevolverPluginCompat {
 
   object autoImport extends RevolverKeys {
     object Revolver {
@@ -38,6 +38,8 @@ object RevolverPlugin extends AutoPlugin {
   }
   import autoImport._
 
+  lazy val reStartClasspathFiles = taskKey[Seq[File]]("reStart classpath files")
+
   lazy val settings = Seq(
 
     reStart / mainClass := (Compile / run / mainClass).value,
@@ -46,6 +48,8 @@ object RevolverPlugin extends AutoPlugin {
 
     Global / reStart / reColors := Revolver.basicColors,
 
+    reStartClasspathFiles := reStartClasspathFilesTask.value,
+
     reStart := Def.inputTask{
       restartApp(
         streams.value,
@@ -53,7 +57,7 @@ object RevolverPlugin extends AutoPlugin {
         thisProjectRef.value,
         reForkOptions.value,
         (reStart / mainClass).value,
-        (reStart / fullClasspath).value,
+        reStartClasspathFiles.value,
         reStartArgs.value,
         startArgsParser.parsed
       )
