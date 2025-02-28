@@ -23,8 +23,8 @@ object Utilities {
   def colorLogger(state: State): Logger = colorLogger(state.log)
 
   def colorLogger(logger: Logger): Logger = new Logger {
-    def trace(t: => Throwable) { logger.trace(t) }
-    def success(message: => String) { success(message) }
+    def trace(t: => Throwable): Unit = { logger.trace(t) }
+    def success(message: => String): Unit = { success(message) }
     def log(level: Level.Value, message: => String): Unit =
       logger.log(level, colorize(logger.ansiCodesSupported, message))
   }

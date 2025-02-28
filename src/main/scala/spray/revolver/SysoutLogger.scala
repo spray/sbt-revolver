@@ -23,16 +23,16 @@ import sbt._
  */
 class SysoutLogger(appName: String, color: String, ansiCodesSupported: Boolean = false) extends Logger {
 
-  def trace(t: => Throwable) {
+  def trace(t: => Throwable): Unit = {
     t.printStackTrace()
     println(t)
   }
 
-  def success(message: => String) {
+  def success(message: => String): Unit = {
     println(Utilities.colorize(ansiCodesSupported, "%s%s[RESET] success: " format (color, appName)) + message)
   }
 
-  def log(level: Level.Value, message: => String) {
+  def log(level: Level.Value, message: => String): Unit = {
     val levelStr = level match {
       case Level.Info => ""
       case Level.Error => "[ERROR]"
