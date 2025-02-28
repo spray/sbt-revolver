@@ -8,4 +8,4 @@ libraryDependencies ++= Seq(
 
 enablePlugins(RevolverPlugin)
 
-envVars in reStart += "TEST_VAR" -> "OK"
+reStart / envVars += "TEST_VAR" -> "OK"

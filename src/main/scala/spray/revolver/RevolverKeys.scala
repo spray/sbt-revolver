@@ -41,7 +41,7 @@ trait RevolverKeys {
   // we cannot put the project specific one `in Global` as it isn't Global
   val reLogTagUnscoped = SettingKey[String]("re-log-tag", "The tag used in front of log messages for this project")
   // users should set this one, while we put the default into the unscoped variant
-  val reLogTag = reLogTagUnscoped in reStart
+  val reLogTag = reStart / reLogTagUnscoped
 
   val debugSettings = SettingKey[Option[DebugSettings]]("debug-settings", "Settings for enabling remote JDWP debugging.")
 

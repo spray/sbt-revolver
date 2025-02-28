@@ -27,7 +27,7 @@ object RevolverPlugin extends AutoPlugin {
         def settings = RevolverPlugin.settings
 
         def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
-          debugSettings in reStart := Some(DebugSettings(port, suspend))
+          reStart / debugSettings := Some(DebugSettings(port, suspend))
 
         def noColors: Seq[String] = Nil
         def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
@@ -40,11 +40,11 @@ object RevolverPlugin extends AutoPlugin {
 
     lazy val settings = Seq(
 
-      mainClass in reStart := (mainClass in run in Compile).value,
+      reStart / mainClass := (Compile / run / mainClass).value,
 
-      fullClasspath in reStart := (fullClasspath in Runtime).value,
+      reStart / fullClasspath := (Runtime / fullClasspath).value,
 
-      reColors in Global in reStart := Revolver.basicColors,
+      Global / reStart / reColors := Revolver.basicColors,
 
       reStart := Def.inputTask{
         restartApp(
@@ -52,29 +52,29 @@ object RevolverPlugin extends AutoPlugin {
           reLogTag.value,
           thisProjectRef.value,
           reForkOptions.value,
-          (mainClass in reStart).value,
-          (fullClasspath in reStart).value,
+          (reStart / mainClass).value,
+          (reStart / fullClasspath).value,
           reStartArgs.value,
           startArgsParser.parsed
         )
-      }.dependsOn(products in Compile).evaluated,
+      }.dependsOn(Compile / products).evaluated,
 
       reStop := stopAppWithStreams(streams.value, thisProjectRef.value),
 
       reStatus := showStatus(streams.value, thisProjectRef.value),
 
       // default: no arguments to the app
-      reStartArgs in Global := Seq.empty,
+      Global / reStartArgs := Seq.empty,
 
       // initialize with env variable
-      reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
+      Global / reJRebelJar := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
-      debugSettings in Global := None,
+      Global / debugSettings := None,
 
       reLogTagUnscoped := thisProjectRef.value.project,
 
       // bake JRebel activation into java options for the forked JVM
-      changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
+      changeJavaOptionsWithExtra(reStart / debugSettings) { (jvmOptions, jrJar, debug) =>
         jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
           debug.map(_.toCmdLineArg).toSeq
       },
@@ -86,23 +86,23 @@ object RevolverPlugin extends AutoPlugin {
           javaHome = javaHome.value,
           outputStrategy = outputStrategy.value,
           bootJars = Vector.empty[File], // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
-          workingDirectory = Option((baseDirectory in reStart).value),
-          runJVMOptions = (javaOptions in reStart).value.toVector,
+          workingDirectory = Option((reStart / baseDirectory).value),
+          runJVMOptions = (reStart / javaOptions).value.toVector,
           connectInput = false,
-          envVars = (envVars in reStart).value
+          envVars = (reStart / envVars).value
         )
       },
 
       // stop a possibly running application if the project is reloaded and the state is reset
-      onUnload in Global ~= { onUnload => state =>
+      Global / onUnload ~= { onUnload => state =>
         stopApps(colorLogger(state))
         onUnload(state)
       },
 
-      onLoad in Global := { state =>
-        val colorTags = (reColors in reStart).value.map(_.toUpperCase formatted "[%s]")
+      Global / onLoad := { state =>
+        val colorTags = (reStart / reColors).value.map(c => "[%s]".format(c.toUpperCase))
         GlobalState.update(_.copy(colorPool = collection.immutable.Queue(colorTags: _*)))
-        (onLoad in Global).value.apply(state)
+        (Global / onLoad).value.apply(state)
       }
     )
 
@@ -118,5 +118,5 @@ object RevolverPlugin extends AutoPlugin {
     changeJavaOptionsWithExtra(sbt.Keys.baseDirectory /* just an ignored dummy */)((jvmArgs, path, _) => f(jvmArgs, path))
 
   def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[_] =
-    javaOptions in reStart := f(javaOptions.value, reJRebelJar.value, extra.value)
+    reStart / javaOptions := f(javaOptions.value, reJRebelJar.value, extra.value)
 }
