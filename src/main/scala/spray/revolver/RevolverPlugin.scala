@@ -20,103 +20,107 @@ import sbt._
 import sbt.Keys._
 import Actions._
 import Utilities._
-object RevolverPlugin extends AutoPlugin {
+object RevolverPlugin extends AutoPlugin with RevolverPluginCompat {
 
-    object autoImport extends RevolverKeys {
-      object Revolver {
-        def settings = RevolverPlugin.settings
+  object autoImport extends RevolverKeys {
+    object Revolver {
+      def settings = RevolverPlugin.settings
 
-        def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
-          debugSettings in reStart := Some(DebugSettings(port, suspend))
+      def enableDebugging(port: Int = 5005, suspend: Boolean = false) =
+        reStart / debugSettings := Some(DebugSettings(port, suspend))
 
-        def noColors: Seq[String] = Nil
-        def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
-        def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
-      }
-
-      val revolverSettings = RevolverPlugin.settings
+      def noColors: Seq[String] = Nil
+      def basicColors = Seq("BLUE", "MAGENTA", "CYAN", "YELLOW", "GREEN")
+      def basicColorsAndUnderlined = basicColors ++ basicColors.map("_"+_)
     }
-    import autoImport._
 
-    lazy val settings = Seq(
+    val revolverSettings = RevolverPlugin.settings
+  }
+  import autoImport._
 
-      mainClass in reStart := (mainClass in run in Compile).value,
+  lazy val reStartClasspathFiles = taskKey[Seq[File]]("reStart classpath files")
 
-      fullClasspath in reStart := (fullClasspath in Runtime).value,
+  lazy val settings = Seq(
 
-      reColors in Global in reStart := Revolver.basicColors,
+    reStart / mainClass := (Compile / run / mainClass).value,
 
-      reStart := Def.inputTask{
-        restartApp(
-          streams.value,
-          reLogTag.value,
-          thisProjectRef.value,
-          reForkOptions.value,
-          (mainClass in reStart).value,
-          (fullClasspath in reStart).value,
-          reStartArgs.value,
-          startArgsParser.parsed
-        )
-      }.dependsOn(products in Compile).evaluated,
+    reStart / fullClasspath := (Runtime / fullClasspath).value,
 
-      reStop := stopAppWithStreams(streams.value, thisProjectRef.value),
+    Global / reStart / reColors := Revolver.basicColors,
 
-      reStatus := showStatus(streams.value, thisProjectRef.value),
+    reStartClasspathFiles := reStartClasspathFilesTask.value,
 
-      // default: no arguments to the app
-      reStartArgs in Global := Seq.empty,
+    reStart := Def.inputTask{
+      restartApp(
+        streams.value,
+        reLogTag.value,
+        thisProjectRef.value,
+        reForkOptions.value,
+        (reStart / mainClass).value,
+        reStartClasspathFiles.value,
+        reStartArgs.value,
+        startArgsParser.parsed
+      )
+    }.dependsOn(Compile / products).evaluated,
 
-      // initialize with env variable
-      reJRebelJar in Global := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
+    reStop := stopAppWithStreams(streams.value, thisProjectRef.value),
 
-      debugSettings in Global := None,
+    reStatus := showStatus(streams.value, thisProjectRef.value),
 
-      reLogTagUnscoped := thisProjectRef.value.project,
+    // default: no arguments to the app
+    Global / reStartArgs := Seq.empty,
 
-      // bake JRebel activation into java options for the forked JVM
-      changeJavaOptionsWithExtra(debugSettings in reStart) { (jvmOptions, jrJar, debug) =>
-        jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
-          debug.map(_.toCmdLineArg).toSeq
-      },
+    // initialize with env variable
+    Global / reJRebelJar := Option(System.getenv("JREBEL_PATH")).getOrElse(""),
 
-      // bundles the various parameters for forking
-      reForkOptions := {
-        taskTemporaryDirectory.value
-        ForkOptions(
-          javaHome = javaHome.value,
-          outputStrategy = outputStrategy.value,
-          bootJars = Vector.empty[File], // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
-          workingDirectory = Option((baseDirectory in reStart).value),
-          runJVMOptions = (javaOptions in reStart).value.toVector,
-          connectInput = false,
-          envVars = (envVars in reStart).value
-        )
-      },
+    Global / debugSettings := None,
 
-      // stop a possibly running application if the project is reloaded and the state is reset
-      onUnload in Global ~= { onUnload => state =>
-        stopApps(colorLogger(state))
-        onUnload(state)
-      },
+    reLogTagUnscoped := thisProjectRef.value.project,
 
-      onLoad in Global := { state =>
-        val colorTags = (reColors in reStart).value.map(_.toUpperCase formatted "[%s]")
-        GlobalState.update(_.copy(colorPool = collection.immutable.Queue(colorTags: _*)))
-        (onLoad in Global).value.apply(state)
-      }
-    )
+    // bake JRebel activation into java options for the forked JVM
+    changeJavaOptionsWithExtra(reStart / debugSettings) { (jvmOptions, jrJar, debug) =>
+      jvmOptions ++ createJRebelAgentOption(SysoutLogger, jrJar).toSeq ++
+        debug.map(_.toCmdLineArg).toSeq
+    },
 
-    override def requires = sbt.plugins.JvmPlugin
-    override def trigger  = allRequirements
-    override def projectSettings = settings
+    // bundles the various parameters for forking
+    reForkOptions := {
+      taskTemporaryDirectory.value
+      ForkOptions(
+        javaHome = javaHome.value,
+        outputStrategy = outputStrategy.value,
+        bootJars = Vector.empty[File], // bootJars is empty by default because only jars on the user's classpath should be on the boot classpath
+        workingDirectory = Option((reStart / baseDirectory).value),
+        runJVMOptions = (reStart / javaOptions).value.toVector,
+        connectInput = false,
+        envVars = (reStart / envVars).value
+      )
+    },
+
+    // stop a possibly running application if the project is reloaded and the state is reset
+    Global / onUnload ~= { onUnload => state =>
+      stopApps(colorLogger(state))
+      onUnload(state)
+    },
+
+    Global / onLoad := { state =>
+      val colorTags = (reStart / reColors).value.map(c => "[%s]".format(c.toUpperCase))
+      GlobalState.update(_.copy(colorPool = collection.immutable.Queue(colorTags*)))
+      (Global / onLoad).value.apply(state)
+    }
+  )
+
+  override def requires = sbt.plugins.JvmPlugin
+  override def trigger  = allRequirements
+  override def projectSettings = settings
 
   /**
    * Changes javaOptions by using transformer function
    * (javaOptions, jrebelJarPath) => newJavaOptions
    */
-  def changeJavaOptions(f: (Seq[String], String) => Seq[String]): Setting[_] =
+  def changeJavaOptions(f: (Seq[String], String) => Seq[String]): Setting[?] =
     changeJavaOptionsWithExtra(sbt.Keys.baseDirectory /* just an ignored dummy */)((jvmArgs, path, _) => f(jvmArgs, path))
 
-  def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[_] =
-    javaOptions in reStart := f(javaOptions.value, reJRebelJar.value, extra.value)
+  def changeJavaOptionsWithExtra[T](extra: SettingKey[T])(f: (Seq[String], String, T) => Seq[String]): Setting[?] =
+    reStart / javaOptions := f(javaOptions.value, reJRebelJar.value, extra.value)
 }

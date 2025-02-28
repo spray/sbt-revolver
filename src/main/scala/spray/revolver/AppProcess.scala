@@ -29,7 +29,7 @@ case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)
 
   def createShutdownHook(msg: => String) =
     new Thread(new Runnable {
-      def run() {
+      def run(): Unit = {
         if (isRunning) {
           log.info(msg)
           process.destroy()
@@ -41,7 +41,7 @@ case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)
 
   val watchThread = {
     val thread = new Thread(new Runnable {
-      def run() {
+      def run(): Unit = {
         val code = process.exitValue()
         finishState = Some(code)
         log.info("... finished with exit code %d" format code)
@@ -56,17 +56,17 @@ case class AppProcess(projectRef: ProjectRef, consoleColor: String, log: Logger)
 
   registerShutdownHook()
 
-  def stop() {
+  def stop(): Unit = {
     unregisterShutdownHook()
     process.destroy()
     process.exitValue()
   }
 
-  def registerShutdownHook() {
+  def registerShutdownHook(): Unit = {
     JRuntime.getRuntime.addShutdownHook(shutdownHook)
   }
 
-  def unregisterShutdownHook() {
+  def unregisterShutdownHook(): Unit = {
     JRuntime.getRuntime.removeShutdownHook(shutdownHook)
   }
 

@@ -7,7 +7,7 @@ import scala.collection.immutable.Queue
 
 case class RevolverState(processes: Map[ProjectRef, AppProcess], colorPool: Queue[String]) {
   def addProcess(project: ProjectRef, process: AppProcess): RevolverState = copy(processes = processes + (project -> process))
-  private[this] def removeProcess(project: ProjectRef): RevolverState = copy(processes = processes - project)
+  private def removeProcess(project: ProjectRef): RevolverState = copy(processes = processes - project)
   def removeProcessAndColor(project: ProjectRef): RevolverState =
     getProcess(project) match {
       case Some(process) => removeProcess(project).offerColor(process.consoleColor)
@@ -38,7 +38,7 @@ object RevolverState {
  * state when doing several updates depending on another.
  */
 object GlobalState {
-  private[this] val state = new AtomicReference(RevolverState.initial)
+  private val state = new AtomicReference(RevolverState.initial)
 
   @tailrec def update(f: RevolverState => RevolverState): RevolverState = {
     val originalState = state.get()
